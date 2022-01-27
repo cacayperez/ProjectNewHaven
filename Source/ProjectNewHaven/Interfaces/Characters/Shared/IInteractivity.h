@@ -1,0 +1,36 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "UObject/Interface.h"
+#include "IInteractivity.generated.h"
+
+// This class does not need to be modified.
+UINTERFACE()
+class UIInteractivity : public UInterface
+{
+	GENERATED_BODY()
+};
+
+/**
+ * 
+ */
+class PROJECTNEWHAVEN_API IIInteractivity
+{
+	GENERATED_BODY()
+
+	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+public:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SelectActor(AActor* OtherActor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void DeselectActor(AActor* OtherActor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void InspectActor(AActor* OtherActor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void InteractActor(AActor* OtherActor);
+};
