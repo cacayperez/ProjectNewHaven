@@ -13,11 +13,18 @@ UCLASS()
 class PROJECTNEWHAVEN_API APlayerControllerBase : public APlayerController
 {
 	GENERATED_BODY()
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	APawn* ControlledPawn;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
+	float BaseCursorSpeed = 10.0f;
+
+public:
+	APlayerControllerBase();
 	
 protected:
+	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
 	// Internal Button Functions
@@ -81,5 +88,8 @@ protected:
 	UFUNCTION()
 	void Internal_Axis_LeftStickY(const float Rate);
 
+	UFUNCTION()
+	void MoveCursor(const float Rate, const EAxis::Type Axis);
+	
 	virtual void SetPawn(APawn* InPawn) override;
 };

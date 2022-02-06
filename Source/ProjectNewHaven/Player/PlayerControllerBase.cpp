@@ -3,11 +3,24 @@
 
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
 
+#include "Kismet/KismetMathLibrary.h"
 #include "ProjectNewHaven/Config/InputDefinitions.h"
 #include "ProjectNewHaven/Debug/DebugHelper.h"
 #include "ProjectNewHaven/Interfaces/Player/IPlayerInput.h"
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
 
+
+APlayerControllerBase::APlayerControllerBase()
+{
+	bShowMouseCursor = true;
+}
+
+void APlayerControllerBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetInputMode(FInputModeGameOnly());
+}
 
 void APlayerControllerBase::SetupInputComponent()
 {
@@ -188,18 +201,12 @@ void APlayerControllerBase::Internal_Button_8_Released()
 
 void APlayerControllerBase::Internal_Axis_RightStickX(const float Rate)
 {
-	if(ControlledPawn != nullptr)
-	{
-		IIPlayerInput::Execute_Input_Axis_RightStickX(ControlledPawn, Rate);
-	}
+	MoveCursor(Rate, EAxis::Y);
 }
 
 void APlayerControllerBase::Internal_Axis_RightStickY(const float Rate)
 {
-	if(ControlledPawn != nullptr)
-	{
-		IIPlayerInput::Execute_Input_Axis_RightStickY(ControlledPawn, Rate);
-	}
+	MoveCursor(Rate, EAxis::X);
 }
 
 void APlayerControllerBase::Internal_Axis_LeftStickX(const float Rate)
@@ -217,6 +224,39 @@ void APlayerControllerBase::Internal_Axis_LeftStickY(const float Rate)
 	{
 		IIPlayerInput::Execute_Input_Axis_LeftStickY(ControlledPawn, Rate);
 	}
+}
+
+void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
+{
+	if(Rate == 0.0f) return;
+	
+	float MousePositionX, MousePositionY;
+	int32 ViewportSizeX, ViewportSizeY;
+	
+	GetMousePosition(MousePositionX, MousePositionY);
+
+	float X = MousePositionX;
+	float Y = MousePositionY;
+	
+	if(Axis == EAxis::X)
+	{
+		Y = MousePositionY + (Rate * BaseCursorSpeed);
+	}
+
+	if(Axis == EAxis::Y)
+	{
+		X = MousePositionX + (Rate * BaseCursorSpeed);
+	}
+
+	
+	GetViewportSize(ViewportSizeX, ViewportSizeY);
+
+	int Padding = 10;
+	const int32 NewPositionX = UKismetMathLibrary::Clamp(X, Padding, ViewportSizeX - Padding);
+	const int32 NewPositionY = UKismetMathLibrary::Clamp(Y, Padding, ViewportSizeY - Padding);
+
+	UDebugHelper::LOG(FString::Printf(TEXT("(%i, %i)"), NewPositionX, NewPositionY));
+	SetMouseLocation(NewPositionX, NewPositionY);
 }
 
 void APlayerControllerBase::SetPawn(APawn* InPawn)
