@@ -25,16 +25,22 @@ class PROJECTNEWHAVEN_API IISceneObject
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ESceneObjectType GetSceneObjectType();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsGrabbed();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetGrab(bool bVal);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnSelect(AActor* FromActor);
+	void OnSelect();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnDeselect(AActor* FromActor);
+	void OnDeselect();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnInspect(AActor* FromActor);
+	void OnInspect();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnInteract(AActor* FromActor);
+	void OnInteract();
 };

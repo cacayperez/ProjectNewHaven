@@ -27,4 +27,16 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PlayerAction_Move(const float Value, const EAxis::Type Axis);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PlayerAction_Interact(AActor* Actor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PlayerAction_Select(AActor* Actor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PlayerAction_Deselect(AActor* Actor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PlayerAction_Inspect(AActor* Actor);
 };

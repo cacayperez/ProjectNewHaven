@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectNewHaven/Models/Settings/GameSetting.h"
 #include "PlayerFunctionLibrary.generated.h"
 
 /**
@@ -15,4 +16,19 @@ class PROJECTNEWHAVEN_API UPlayerFunctionLibrary : public UBlueprintFunctionLibr
 public:
 	UFUNCTION(BlueprintCallable)
 	static APawn* Pawn_ImplementsPlayerInput(APawn* Pawn);
+	
+	UFUNCTION(BlueprintCallable)
+	static AActor* Actor_IsSceneObject(AActor* Actor);
+	
+	UFUNCTION(BlueprintCallable)
+	static AActor* GetObjectOnCursor(APlayerController* Controller);
+
+	UFUNCTION(BlueprintCallable)
+	static bool GetCursorLocation(APlayerController* Controller, FVector& Location);
+
+	UFUNCTION(BlueprintCallable)
+	static APawn* GetActivePawn(UObject* Context);
+
+	UFUNCTION(BlueprintCallable)
+	static EGameMode GetGameMode(UObject* Context);
 };

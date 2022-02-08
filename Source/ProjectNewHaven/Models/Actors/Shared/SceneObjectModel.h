@@ -8,7 +8,7 @@
 #include "SceneObjectModel.generated.h"
 
 UENUM()
-enum class ESceneObjectType
+enum class ESceneObjectType : uint8
 {
 	None,
 	Fixture,

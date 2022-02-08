@@ -5,6 +5,7 @@
 
 #include "Kismet/KismetMathLibrary.h"
 #include "ProjectNewHaven/Config/InputDefinitions.h"
+#include "ProjectNewHaven/Config/ViewportSettings.h"
 #include "ProjectNewHaven/Debug/DebugHelper.h"
 #include "ProjectNewHaven/Interfaces/Player/IPlayerInput.h"
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
@@ -13,13 +14,16 @@
 APlayerControllerBase::APlayerControllerBase()
 {
 	bShowMouseCursor = true;
+	bEnableClickEvents = true;
+	bEnableMouseOverEvents = true;
+	bEnableTouchEvents = false;
 }
 
 void APlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetInputMode(FInputModeGameOnly());
+	SetInputMode(FInputModeGameAndUI());
 }
 
 void APlayerControllerBase::SetupInputComponent()
@@ -214,7 +218,6 @@ void APlayerControllerBase::Internal_Axis_LeftStickX(const float Rate)
 	if(ControlledPawn != nullptr)
 	{
 		IIPlayerInput::Execute_Input_Axis_LeftStickX(ControlledPawn, Rate);
-		
 	}
 }
 
@@ -251,11 +254,9 @@ void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
 	
 	GetViewportSize(ViewportSizeX, ViewportSizeY);
 
-	int Padding = 10;
-	const int32 NewPositionX = UKismetMathLibrary::Clamp(X, Padding, ViewportSizeX - Padding);
-	const int32 NewPositionY = UKismetMathLibrary::Clamp(Y, Padding, ViewportSizeY - Padding);
+	const int32 NewPositionX = UKismetMathLibrary::Clamp(X, VIEWPORT_CURSOR_PADDING, ViewportSizeX - VIEWPORT_CURSOR_PADDING);
+	const int32 NewPositionY = UKismetMathLibrary::Clamp(Y, VIEWPORT_CURSOR_PADDING, ViewportSizeY - VIEWPORT_CURSOR_PADDING);
 
-	UDebugHelper::LOG(FString::Printf(TEXT("(%i, %i)"), NewPositionX, NewPositionY));
 	SetMouseLocation(NewPositionX, NewPositionY);
 }
 

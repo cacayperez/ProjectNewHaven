@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "ProjectNewHaven/Models/Settings/GameSetting.h"
 #include "PlayerControllerBase.generated.h"
 
 /**
@@ -20,6 +21,9 @@ class PROJECTNEWHAVEN_API APlayerControllerBase : public APlayerController
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	float BaseCursorSpeed = 10.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
+	EGameMode CurrentGameMode = EGameMode::Build;
+	
 public:
 	APlayerControllerBase();
 	
@@ -92,4 +96,7 @@ protected:
 	void MoveCursor(const float Rate, const EAxis::Type Axis);
 	
 	virtual void SetPawn(APawn* InPawn) override;
+
+public:
+	FORCEINLINE EGameMode GetGameMode() const { return CurrentGameMode; };
 };

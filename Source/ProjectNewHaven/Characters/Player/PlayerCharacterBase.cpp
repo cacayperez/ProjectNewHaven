@@ -7,7 +7,6 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "ProjectNewHaven/Config/InputDefinitions.h"
 #include "ProjectNewHaven/Debug/DebugHelper.h"
 #include "ProjectNewHaven/Library/AnimationAssistLibrary.h"
 
