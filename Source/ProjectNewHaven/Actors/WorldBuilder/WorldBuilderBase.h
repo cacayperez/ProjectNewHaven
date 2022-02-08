@@ -35,7 +35,7 @@ class PROJECTNEWHAVEN_API AWorldBuilderBase : public ADefaultPawn, public IIPlay
 
 	UPROPERTY()
 	class APlayerControllerBase* PlayerControllerBase;
-	
+
 public:
 	// Sets default values for this pawn's properties
 	AWorldBuilderBase();

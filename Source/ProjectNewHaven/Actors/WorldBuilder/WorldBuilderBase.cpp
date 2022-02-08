@@ -36,7 +36,7 @@ AWorldBuilderBase::AWorldBuilderBase()
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	
 
 	FloatingPawnMovement = Cast<UFloatingPawnMovement>(ADefaultPawn::GetMovementComponent());
 
@@ -73,6 +73,7 @@ void AWorldBuilderBase::PlayerAction_Move_Implementation(const float Value, cons
 	{
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(Axis);
+
 		AddMovementInput( Direction, Value );
 	}
 }

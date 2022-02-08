@@ -23,7 +23,12 @@ class PROJECTNEWHAVEN_API APlayerControllerBase : public APlayerController
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	EGameMode CurrentGameMode = EGameMode::Build;
+
+	UPROPERTY()
+	float LeftStickX_Rate_Previous;
 	
+	UPROPERTY()
+	float LeftStickY_Rate_Previous;
 public:
 	APlayerControllerBase();
 	

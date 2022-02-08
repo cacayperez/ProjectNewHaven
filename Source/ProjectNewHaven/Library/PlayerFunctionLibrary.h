@@ -16,6 +16,9 @@ class PROJECTNEWHAVEN_API UPlayerFunctionLibrary : public UBlueprintFunctionLibr
 public:
 	UFUNCTION(BlueprintCallable)
 	static bool IsPlayerPawn(APawn* Pawn);
+
+	UFUNCTION(BlueprintCallable)
+	static APawn* ValidatePlayerPawn(APawn* Pawn);
 	
 	UFUNCTION(BlueprintCallable)
 	static AActor* Actor_IsSceneObject(AActor* Actor);
@@ -31,4 +34,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static EGameMode GetGameMode(UObject* Context);
+
 };

@@ -7,7 +7,7 @@
 #include "ProjectNewHaven/Config/InputDefinitions.h"
 #include "ProjectNewHaven/Config/ViewportSettings.h"
 #include "ProjectNewHaven/Debug/DebugHelper.h"
-#include "ProjectNewHaven/Interfaces/Player/IPlayerInput.h"
+#include "ProjectNewHaven/Interfaces/Player/IPlayerPawn.h"
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
 
 
@@ -78,7 +78,7 @@ void APlayerControllerBase::Internal_Button_1_Pressed()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_1_Pressed(ControlledPawn);	
+		IIPlayerPawn::Execute_Input_Button_1_Pressed(ControlledPawn);	
 	}
 }
 
@@ -86,7 +86,7 @@ void APlayerControllerBase::Internal_Button_1_Released()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_1_Released(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_1_Released(ControlledPawn);
 	}
 }
 
@@ -94,7 +94,7 @@ void APlayerControllerBase::Internal_Button_2_Pressed()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_2_Pressed(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_2_Pressed(ControlledPawn);
 	}
 }
 
@@ -102,7 +102,7 @@ void APlayerControllerBase::Internal_Button_2_Released()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_2_Released(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_2_Released(ControlledPawn);
 	}
 }
 
@@ -110,7 +110,7 @@ void APlayerControllerBase::Internal_Button_3_Pressed()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_3_Pressed(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_3_Pressed(ControlledPawn);
 	}
 }
 
@@ -118,7 +118,7 @@ void APlayerControllerBase::Internal_Button_3_Released()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_3_Released(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_3_Released(ControlledPawn);
 	}
 }
 
@@ -126,7 +126,7 @@ void APlayerControllerBase::Internal_Button_4_Pressed()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_4_Pressed(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_4_Pressed(ControlledPawn);
 	}
 }
 
@@ -134,7 +134,7 @@ void APlayerControllerBase::Internal_Button_4_Released()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_4_Released(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_4_Released(ControlledPawn);
 	}
 }
 
@@ -142,7 +142,7 @@ void APlayerControllerBase::Internal_Button_5_Pressed()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_5_Pressed(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_5_Pressed(ControlledPawn);
 	}
 }
 
@@ -150,7 +150,7 @@ void APlayerControllerBase::Internal_Button_5_Released()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_5_Released(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_5_Released(ControlledPawn);
 	}
 }
 
@@ -158,7 +158,7 @@ void APlayerControllerBase::Internal_Button_6_Pressed()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_6_Pressed(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_6_Pressed(ControlledPawn);
 	}
 }
 
@@ -166,7 +166,7 @@ void APlayerControllerBase::Internal_Button_6_Released()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_6_Released(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_6_Released(ControlledPawn);
 	}
 }
 
@@ -174,7 +174,7 @@ void APlayerControllerBase::Internal_Button_7_Pressed()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_7_Pressed(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_7_Pressed(ControlledPawn);
 	}
 }
 
@@ -182,7 +182,7 @@ void APlayerControllerBase::Internal_Button_7_Released()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_7_Released(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_7_Released(ControlledPawn);
 	}
 }
 
@@ -190,7 +190,7 @@ void APlayerControllerBase::Internal_Button_8_Pressed()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_8_Pressed(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_8_Pressed(ControlledPawn);
 	}
 	
 }
@@ -199,7 +199,7 @@ void APlayerControllerBase::Internal_Button_8_Released()
 {
 	if(ControlledPawn != nullptr)
 	{
-		IIPlayerInput::Execute_Input_Button_8_Released(ControlledPawn);
+		IIPlayerPawn::Execute_Input_Button_8_Released(ControlledPawn);
 	}
 }
 
@@ -215,17 +215,34 @@ void APlayerControllerBase::Internal_Axis_RightStickY(const float Rate)
 
 void APlayerControllerBase::Internal_Axis_LeftStickX(const float Rate)
 {
-	if(ControlledPawn != nullptr)
+	
+	if(ControlledPawn != nullptr && Rate != 0.0f)
 	{
-		IIPlayerInput::Execute_Input_Axis_LeftStickX(ControlledPawn, Rate);
+		const float Delta = GetWorld()->GetDeltaSeconds();
+		const float SmoothedRate = FMath::FInterpTo(LeftStickX_Rate_Previous, Rate, Delta, 0.5f);
+
+		UDebugHelper::LOG(FString::Printf(TEXT("%f , %f"), Rate, SmoothedRate));
+		IIPlayerPawn::Execute_Input_Axis_LeftStickX(ControlledPawn, SmoothedRate);
+		LeftStickX_Rate_Previous = SmoothedRate;
+	}
+	else
+	{
+		LeftStickX_Rate_Previous = Rate;
 	}
 }
 
 void APlayerControllerBase::Internal_Axis_LeftStickY(const float Rate)
 {
-	if(ControlledPawn != nullptr)
+	if(ControlledPawn != nullptr && Rate != 0.0f)
 	{
-		IIPlayerInput::Execute_Input_Axis_LeftStickY(ControlledPawn, Rate);
+		const float Delta = GetWorld()->GetDeltaSeconds();
+		const float SmoothedRate = FMath::FInterpTo(LeftStickY_Rate_Previous, Rate, Delta, 3);
+		IIPlayerPawn::Execute_Input_Axis_LeftStickY(ControlledPawn, SmoothedRate);
+		LeftStickY_Rate_Previous = SmoothedRate;
+	}
+	else
+	{
+		LeftStickY_Rate_Previous = 0.0f;
 	}
 }
 
@@ -240,15 +257,15 @@ void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
 
 	float X = MousePositionX;
 	float Y = MousePositionY;
-	
+	const float Delta =  ((Rate * BaseCursorSpeed) * GetWorld()->GetDeltaSeconds());
 	if(Axis == EAxis::X)
 	{
-		Y = MousePositionY + (Rate * BaseCursorSpeed);
+		Y = MousePositionY + Delta;
 	}
 
 	if(Axis == EAxis::Y)
 	{
-		X = MousePositionX + (Rate * BaseCursorSpeed);
+		X = MousePositionX + Delta;
 	}
 
 	
@@ -262,10 +279,12 @@ void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
 
 void APlayerControllerBase::SetPawn(APawn* InPawn)
 {
-	const bool bIsPlayerPawn =  UPlayerFunctionLibrary::IsPlayerPawn(InPawn);
-	if(bIsPlayerPawn == true)
+	//const bool bIsPlayerPawn =  UPlayerFunctionLibrary::IsPlayerPawn(InPawn);
+	APawn* SubjectPawn = UPlayerFunctionLibrary::ValidatePlayerPawn(InPawn);
+	if(IsValid(SubjectPawn))
 	{
 		ControlledPawn = InPawn;
-		Super::SetPawn(InPawn);
 	}
+	
+	Super::SetPawn(InPawn);
 }

@@ -6,7 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
-#include "ProjectNewHaven/Interfaces/Player/IPlayerInput.h"
+#include "ProjectNewHaven/Interfaces/Player/IPlayerPawn.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
 
 bool UPlayerFunctionLibrary::IsPlayerPawn(APawn* Pawn)
@@ -14,12 +14,24 @@ bool UPlayerFunctionLibrary::IsPlayerPawn(APawn* Pawn)
 	APawn* SubjectPawn = Pawn;
 	bool bVal = false;
 	
-	if(SubjectPawn != nullptr && SubjectPawn->GetClass()->ImplementsInterface(UIPlayerInput::StaticClass()) == true)
+	if(SubjectPawn != nullptr && SubjectPawn->GetClass()->ImplementsInterface(UIPlayerPawn::StaticClass()) == true)
 	{
 		bVal = true;
 	}
 
 	return bVal;
+}
+
+APawn* UPlayerFunctionLibrary::ValidatePlayerPawn(APawn* Pawn)
+{
+	APawn* SubjectPawn = Pawn;
+	
+	if(SubjectPawn != nullptr && SubjectPawn->GetClass()->ImplementsInterface(UIPlayerPawn::StaticClass()) == true)
+	{
+		return SubjectPawn;
+	}
+
+	return nullptr;
 }
 
 AActor* UPlayerFunctionLibrary::Actor_IsSceneObject(AActor* Actor)
