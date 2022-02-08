@@ -15,7 +15,7 @@ class PROJECTNEWHAVEN_API UPlayerFunctionLibrary : public UBlueprintFunctionLibr
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable)
-	static bool IsPlayerPawn(APawn* Pawn);
+	static APawn* Pawn_ImplementsPlayerInput(APawn* Pawn);
 	
 	UFUNCTION(BlueprintCallable)
 	static AActor* Actor_IsSceneObject(AActor* Actor);

@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/DefaultPawn.h"
-#include "ProjectNewHaven/Interfaces/Player/IPlayerPawn.h"
+#include "ProjectNewHaven/Interfaces/Player/IPlayerAction.h"
+#include "ProjectNewHaven/Interfaces/Player/IPlayerInput.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
 #include "WorldBuilderBase.generated.h"
 
 UCLASS()
-class PROJECTNEWHAVEN_API AWorldBuilderBase : public ADefaultPawn, public IIPlayerPawn
+class PROJECTNEWHAVEN_API AWorldBuilderBase : public ADefaultPawn, public IIPlayerInput, public IIPlayerAction
 {
 	GENERATED_BODY()
 

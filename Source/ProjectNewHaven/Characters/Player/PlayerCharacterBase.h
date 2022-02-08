@@ -6,11 +6,12 @@
 #include "GameFramework/Character.h"
 #include "ProjectNewHaven/Interfaces/Characters/Shared/ICharacter.h"
 #include "ProjectNewHaven/Interfaces/Characters/Shared/IInteractivity.h"
-#include "ProjectNewHaven/Interfaces/Player/IPlayerPawn.h"
+#include "ProjectNewHaven/Interfaces/Player/IPlayerAction.h"
+#include "ProjectNewHaven/Interfaces/Player/IPlayerInput.h"
 #include "PlayerCharacterBase.generated.h"
 
 UCLASS()
-class PROJECTNEWHAVEN_API APlayerCharacterBase : public ACharacter, public IIPlayerPawn, public IICharacter, public IIInteractivity
+class PROJECTNEWHAVEN_API APlayerCharacterBase : public ACharacter, public IIPlayerAction, public IIPlayerInput, public IICharacter, public IIInteractivity
 {
 	GENERATED_BODY()
 	

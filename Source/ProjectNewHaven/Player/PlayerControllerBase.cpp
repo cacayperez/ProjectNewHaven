@@ -262,10 +262,11 @@ void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
 
 void APlayerControllerBase::SetPawn(APawn* InPawn)
 {
-	const bool bIsPlayerPawn =  UPlayerFunctionLibrary::IsPlayerPawn(InPawn);
-	if(bIsPlayerPawn == true)
+	APawn* SubjectPawn = UPlayerFunctionLibrary::Pawn_ImplementsPlayerInput(InPawn);
+	if(SubjectPawn != nullptr)
 	{
-		ControlledPawn = InPawn;
+		ControlledPawn = SubjectPawn;
 		Super::SetPawn(InPawn);
 	}
+	
 }
