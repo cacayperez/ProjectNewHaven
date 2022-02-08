@@ -9,16 +9,17 @@
 #include "ProjectNewHaven/Interfaces/Player/IPlayerInput.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
 
-APawn* UPlayerFunctionLibrary::Pawn_ImplementsPlayerInput(APawn* Pawn)
+bool UPlayerFunctionLibrary::IsPlayerPawn(APawn* Pawn)
 {
 	APawn* SubjectPawn = Pawn;
+	bool bVal = false;
 	
 	if(SubjectPawn != nullptr && SubjectPawn->GetClass()->ImplementsInterface(UIPlayerInput::StaticClass()) == true)
 	{
-		return SubjectPawn;
+		bVal = true;
 	}
 
-	return nullptr;
+	return bVal;
 }
 
 AActor* UPlayerFunctionLibrary::Actor_IsSceneObject(AActor* Actor)
