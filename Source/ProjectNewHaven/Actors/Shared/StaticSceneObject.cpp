@@ -12,11 +12,10 @@
 // Sets default values
 AStaticSceneObject::AStaticSceneObject()
 {
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 
-	RootComponent = BoxComponent;
 	MeshComponent->SetupAttachment(RootComponent);
+	MeshComponent->SetCollisionProfileName(FName("SceneObject"));
 	
 }
 
@@ -81,7 +80,7 @@ void AStaticSceneObject::OnCursor_HoverIn(UPrimitiveComponent * Component)
 
 void AStaticSceneObject::OnCursor_HoverOut(UPrimitiveComponent* Component)
 {
-	Execute_OnDeselect(this);
+	
 }
 
 void AStaticSceneObject::Interact_Mode_Adventure()

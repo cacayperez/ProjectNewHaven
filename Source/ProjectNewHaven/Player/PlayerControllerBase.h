@@ -19,7 +19,7 @@ class PROJECTNEWHAVEN_API APlayerControllerBase : public APlayerController
 	APawn* ControlledPawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
-	float BaseCursorSpeed = 10.0f;
+	float BaseCursorSpeed = 0.5f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	EGameMode CurrentGameMode = EGameMode::Build;

@@ -3,6 +3,8 @@
 
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
 
+#include "GameFramework/GameUserSettings.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ProjectNewHaven/Config/InputDefinitions.h"
 #include "ProjectNewHaven/Config/ViewportSettings.h"
@@ -219,10 +221,10 @@ void APlayerControllerBase::Internal_Axis_LeftStickX(const float Rate)
 	if(ControlledPawn != nullptr && Rate != 0.0f)
 	{
 		const float Delta = GetWorld()->GetDeltaSeconds();
-		const float SmoothedRate = FMath::FInterpTo(LeftStickX_Rate_Previous, Rate, Delta, 0.5f);
+		const float SmoothedRate = FMath::FInterpTo(LeftStickX_Rate_Previous, Rate, Delta, 30.0f);
 
-		UDebugHelper::LOG(FString::Printf(TEXT("%f , %f"), Rate, SmoothedRate));
-		IIPlayerPawn::Execute_Input_Axis_LeftStickX(ControlledPawn, SmoothedRate);
+		
+		IIPlayerPawn::Execute_Input_Axis_LeftStickX(ControlledPawn, Rate);
 		LeftStickX_Rate_Previous = SmoothedRate;
 	}
 	else
@@ -236,8 +238,8 @@ void APlayerControllerBase::Internal_Axis_LeftStickY(const float Rate)
 	if(ControlledPawn != nullptr && Rate != 0.0f)
 	{
 		const float Delta = GetWorld()->GetDeltaSeconds();
-		const float SmoothedRate = FMath::FInterpTo(LeftStickY_Rate_Previous, Rate, Delta, 3);
-		IIPlayerPawn::Execute_Input_Axis_LeftStickY(ControlledPawn, SmoothedRate);
+		const float SmoothedRate = FMath::FInterpTo(LeftStickY_Rate_Previous, Rate, Delta, 30.0f);
+		IIPlayerPawn::Execute_Input_Axis_LeftStickY(ControlledPawn, Rate);
 		LeftStickY_Rate_Previous = SmoothedRate;
 	}
 	else
@@ -257,22 +259,30 @@ void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
 
 	float X = MousePositionX;
 	float Y = MousePositionY;
-	const float Delta =  ((Rate * BaseCursorSpeed) * GetWorld()->GetDeltaSeconds());
+	const float Delta = GetWorld()->GetDeltaSeconds();
+	
+	const float Speed =  Rate *  (BaseCursorSpeed/ Delta);
+
 	if(Axis == EAxis::X)
 	{
-		Y = MousePositionY + Delta;
+		Y = MousePositionY + Speed;
 	}
 
 	if(Axis == EAxis::Y)
 	{
-		X = MousePositionX + Delta;
+		X = MousePositionX + Speed;
 	}
 
 	
 	GetViewportSize(ViewportSizeX, ViewportSizeY);
 
-	const int32 NewPositionX = UKismetMathLibrary::Clamp(X, VIEWPORT_CURSOR_PADDING, ViewportSizeX - VIEWPORT_CURSOR_PADDING);
-	const int32 NewPositionY = UKismetMathLibrary::Clamp(Y, VIEWPORT_CURSOR_PADDING, ViewportSizeY - VIEWPORT_CURSOR_PADDING);
+	const float InterpX = FMath::FInterpTo(MousePositionX, X, Delta, 30.f);
+	const float InterpY = FMath::FInterpTo(MousePositionY, Y, Delta, 30.f);
+
+	UDebugHelper::LOG(FString::Printf(TEXT("%f, %f"), InterpX, MousePositionX));
+	
+	const int32 NewPositionX = UKismetMathLibrary::Clamp(InterpX, VIEWPORT_CURSOR_PADDING, ViewportSizeX - VIEWPORT_CURSOR_PADDING);
+	const int32 NewPositionY = UKismetMathLibrary::Clamp(InterpY, VIEWPORT_CURSOR_PADDING, ViewportSizeY - VIEWPORT_CURSOR_PADDING);
 
 	SetMouseLocation(NewPositionX, NewPositionY);
 }

@@ -4,7 +4,8 @@
 #include "PlayerFunctionLibrary.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "ProjectNewHaven/Config/GameplaySettings.h"
+#include "ProjectNewHaven/Debug/DebugHelper.h"
 #include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
 #include "ProjectNewHaven/Interfaces/Player/IPlayerPawn.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
@@ -50,7 +51,7 @@ AActor* UPlayerFunctionLibrary::GetObjectOnCursor(APlayerController* Controller)
 	if(Controller == nullptr) return nullptr;
 	
 	FHitResult HitResult;
-	const bool bHit = Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Visibility), true, HitResult);
+	const bool bHit = Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_SceneObject), true, HitResult);
 
 	if(bHit)
 	{
@@ -66,7 +67,7 @@ bool UPlayerFunctionLibrary::GetCursorLocation(APlayerController* Controller, FV
 	if(Controller == nullptr) return false;
 	
 	FHitResult HitResult;
-	const bool bHit = Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Visibility), true, HitResult);
+	const bool bHit = Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_SceneObject), true, HitResult);
 	
 	if(bHit)
 	{

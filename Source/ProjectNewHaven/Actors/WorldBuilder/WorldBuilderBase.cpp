@@ -36,7 +36,9 @@ AWorldBuilderBase::AWorldBuilderBase()
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	
+	FollowCamera->PostProcessSettings.bOverride_MotionBlurAmount = true;
+	FollowCamera->PostProcessSettings.MotionBlurAmount = 0;
+	FollowCamera->PostProcessSettings.MotionBlurMax = 0;
 
 	FloatingPawnMovement = Cast<UFloatingPawnMovement>(ADefaultPawn::GetMovementComponent());
 
@@ -60,10 +62,10 @@ void AWorldBuilderBase::Tick(float DeltaSeconds)
 		FVector ActorLocation = ActiveSceneObject->GetActorLocation();
 		FVector NewLocation;
 		UPlayerFunctionLibrary::GetCursorLocation(GetPlayerControllerBase(), NewLocation);
-		NewLocation.Z = ActorLocation.Z;
+		NewLocation.Z = GetActorLocation().Z;
 
-		FVector Interp = UKismetMathLibrary::VInterpTo(ActorLocation, NewLocation, DeltaSeconds, 10.f);
-		ActiveSceneObject->SetActorLocation(NewLocation);
+		FVector Interp = FMath::VInterpTo(ActorLocation, NewLocation, DeltaSeconds, 0.1f);
+		ActiveSceneObject->SetActorLocation(Interp);
 	}
 }
 
@@ -74,7 +76,8 @@ void AWorldBuilderBase::PlayerAction_Move_Implementation(const float Value, cons
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(Axis);
 
-		AddMovementInput( Direction, Value );
+		const float NewVal = Value * GetWorld()->GetDeltaSeconds();
+		AddMovementInput( Direction, NewVal );
 	}
 }
 
