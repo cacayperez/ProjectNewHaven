@@ -15,10 +15,14 @@ class PROJECTNEWHAVEN_API AStaticSceneObject : public AActor, public IISceneObje
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Mesh", meta = (AllowPrivateAccess = "true"))
 	class UMeshComponent* MeshComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Mesh", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* Base;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool bIsGrabbed = false;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool bHasCollided = false;
 	
 public:
 	// Sets default values for this actor's properties
@@ -27,28 +31,34 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/*UFUNCTION()
+	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void OnComponentEndOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);*/
+
 public:
 
-	
+
+	virtual FVector GetBaseLocation_Implementation() const override;
 	FORCEINLINE class UMeshComponent* GetMeshComponent() const { return MeshComponent; }
-	
-	virtual void OnSelect_Implementation() override;
-	virtual void OnDeselect_Implementation() override;
-	virtual void OnInspect_Implementation() override;
-	virtual void OnInteract_Implementation() override;
+
+	virtual void OnBuilderCharacter_Select_Implementation() override;
+	virtual void OnBuilderCharacter_Deselect_Implementation() override;
+	virtual void OnBuilderCharacter_Inspect_Implementation() override;
+	virtual void OnBuilderCharacter_Interact_Implementation() override;
+	virtual bool HasCollided_Implementation() override;
+
 	virtual bool IsGrabbed_Implementation() override;
 	virtual void SetGrab_Implementation(bool bVal) override;
+
+
+	
 	UFUNCTION()
 	void OnCursor_HoverIn(class UPrimitiveComponent * Component);
 
 	UFUNCTION()
 	void OnCursor_HoverOut(class UPrimitiveComponent * Component);
 
-	UFUNCTION()
-	void Interact_Mode_Adventure();
-	
-	UFUNCTION()
-	void Interact_Mode_Build();
-	
 };
 

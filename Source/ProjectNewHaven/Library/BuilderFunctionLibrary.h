@@ -13,6 +13,6 @@ class PROJECTNEWHAVEN_API UBuilderFunctionLibrary : public UBlueprintFunctionLib
 {
 	GENERATED_BODY()
 public:
-	// UFUNCTION(BlueprintCallable)
-	// static void 
+	UFUNCTION(BlueprintCallable)
+	static bool IsWall(UPrimitiveComponent* Component); 
 };

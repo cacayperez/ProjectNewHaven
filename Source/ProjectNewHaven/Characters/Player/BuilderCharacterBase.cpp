@@ -51,15 +51,20 @@ void ABuilderCharacterBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(IsValid(GetPlayerControllerBase()) && IsValid(ActiveSceneObject))
 	{
-		TestDelta = TestDelta + DeltaTime; 
 		FVector ActorLocation = ActiveSceneObject->GetActorLocation();
 		FVector NewLocation;
-		UPlayerFunctionLibrary::GetCursorLocation(GetPlayerControllerBase(), NewLocation);
-		NewLocation.Z = GetActorLocation().Z;;
+		const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
 
-		FVector Interp = UKismetMathLibrary::VInterpTo(ActorLocation, NewLocation, TestDelta, 10.0f);
+		if(bIsInViewportBounds)
+		{
+			//NewLocation.Z = GetActorLocation().Z;;
+
+			const FVector Interp = UKismetMathLibrary::VInterpTo(ActorLocation, NewLocation, DeltaTime, 20.0f);
 		
-		ActiveSceneObject->SetActorLocation(Interp);
+			ActiveSceneObject->SetActorLocation(Interp);
+		}
+		
+		
 	}
 }
 
@@ -84,46 +89,30 @@ void ABuilderCharacterBase::PlayerAction_Move_Implementation(const float Value, 
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(Axis);
 
 		CameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
-		const FVector CameraLoc = CameraManager->GetCameraLocation();
-
-		const FVector OldPosition = GetActorLocation();
 		
 		AddMovementInput( Direction, Value );
-
-		//
-		//
-		// APlayerControllerBase* PController = Cast<APlayerControllerBase>(Controller);
-		// if(IsValid(PController))
-		// {
-		// 	
-		// 	float MouseX, MouseY;
-		// 	FVector2D CameraLoc2D;
-		// 	PController->GetMousePosition(MouseX, MouseY);
-		// 	FVector Test = FMath::VInterpTo(OldPosition, GetActorLocation(), GetWorld()->GetDeltaSeconds(), 0.1f);
-		// 	PController->ProjectWorldLocationToScreen(Test, CameraLoc2D, true);
-		//
-		// 	
-		// 	
-		// 	const float X = FMath::FInterpTo(MouseX, CameraLoc2D.X, GetWorld()->GetDeltaSeconds(), 0.1f);
-		// 	const float Y = FMath::FInterpTo(MouseY, CameraLoc2D.Y, GetWorld()->GetDeltaSeconds(), 0.1f);
-		// 	
-		// 	PController->SetMouseLocation( X, Y);
-		// }
 	}
 }
 
 void ABuilderCharacterBase::PlayerAction_Interact_Implementation(AActor* Actor)
 {
-	if(Actor == nullptr) return;
 
-	UDebugHelper::LOG(FString::Printf(TEXT("%s"), *Actor->GetName()));
-	
-	if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor) != nullptr)
+	if(ActiveSceneObject == nullptr)
 	{
+		if(Actor == nullptr) return;
 		
-		IISceneObject::Execute_OnInteract(Actor);
-		GrabSceneObject(Actor);
+		const AActor* LocalActor = UPlayerFunctionLibrary::Actor_IsSceneObject(Actor);
+		if(IsValid(LocalActor))
+		{
+			IISceneObject::Execute_OnBuilderCharacter_Interact(Actor);
+			UPlayerFunctionLibrary::SnapCursorToActor(Cast<APlayerController>(Controller), Actor);
+			GrabSceneObject(Actor);
 		
+		}
+	}
+	else
+	{
+		PlaceActiveSceneObject();
 	}
 }
 
@@ -131,7 +120,7 @@ void ABuilderCharacterBase::PlayerAction_Select_Implementation(AActor* Actor)
 {
 	if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor) != nullptr)
 	{
-		IISceneObject::Execute_OnSelect(Actor);
+		IISceneObject::Execute_OnBuilderCharacter_Select(Actor);
 	}
 }
 
@@ -139,7 +128,7 @@ void ABuilderCharacterBase::PlayerAction_Deselect_Implementation(AActor* Actor)
 {
 	if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor) != nullptr)
 	{
-		IISceneObject::Execute_OnDeselect(Actor);
+		IISceneObject::Execute_OnBuilderCharacter_Deselect(Actor);
 	}
 }
 
@@ -163,8 +152,8 @@ void ABuilderCharacterBase::Input_Button_3_Pressed_Implementation()
 {
 	if(Controller != nullptr)
 	{
+		
 		APlayerController* PlayerController = Cast<APlayerController>(Controller);
-
 		if(IsValid(PlayerController))
 		{
 			AActor* Actor = UPlayerFunctionLibrary::GetObjectOnCursor(PlayerController);
@@ -191,4 +180,21 @@ void ABuilderCharacterBase::GrabSceneObject(AActor* Actor)
 
 	ActiveSceneObject = Actor;
 	SetActorTickEnabled(true);
+}
+
+void ABuilderCharacterBase::PlaceActiveSceneObject()
+{
+	if(ActiveSceneObject == nullptr) return;
+	if(Controller == nullptr) return;;
+	SetActorTickEnabled(false);
+	FVector FloorLocation;
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	UPlayerFunctionLibrary::TraceFloorViaCursor(PlayerController, FloorLocation);
+	
+	ActiveSceneObject->SetActorLocation(FloorLocation);
+	
+
+	// To-do
+	// add floor vector and bottom vector of scene object
+	ActiveSceneObject = nullptr;
 }

@@ -31,16 +31,35 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetGrab(bool bVal);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool HasCollided();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnSelect();
+	FVector GetBaseLocation() const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnDeselect();
+	void OnPlayerCharacter_Select();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnInspect();
+	void OnPlayerCharacter_Deselect();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnInteract();
+	void OnPlayerCharacter_Inspect();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnPlayerCharacter_Interact();
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnBuilderCharacter_Select();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnBuilderCharacter_Deselect();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnBuilderCharacter_Inspect();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnBuilderCharacter_Interact();
 };

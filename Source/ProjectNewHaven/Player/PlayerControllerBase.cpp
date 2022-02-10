@@ -19,6 +19,7 @@ APlayerControllerBase::APlayerControllerBase()
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 	bEnableTouchEvents = false;
+
 }
 
 void APlayerControllerBase::BeginPlay()
@@ -32,7 +33,6 @@ void APlayerControllerBase::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-// Axis Left
 	// For Forward and Right Movement
 	InputComponent->BindAxis(INPUT_AXIS_LEFT_Y, this, &APlayerControllerBase::Internal_Axis_LeftStickY);
 	InputComponent->BindAxis(INPUT_AXIS_LEFT_X, this, &APlayerControllerBase::Internal_Axis_LeftStickX);
@@ -207,12 +207,12 @@ void APlayerControllerBase::Internal_Button_8_Released()
 
 void APlayerControllerBase::Internal_Axis_RightStickX(const float Rate)
 {
-	MoveCursor(Rate, EAxis::Y);
+	MoveCursor_Gamepad(Rate, EAxis::Y);
 }
 
 void APlayerControllerBase::Internal_Axis_RightStickY(const float Rate)
 {
-	MoveCursor(Rate, EAxis::X);
+	MoveCursor_Gamepad(Rate, EAxis::X);
 }
 
 void APlayerControllerBase::Internal_Axis_LeftStickX(const float Rate)
@@ -220,16 +220,8 @@ void APlayerControllerBase::Internal_Axis_LeftStickX(const float Rate)
 	
 	if(ControlledPawn != nullptr && Rate != 0.0f)
 	{
-		const float Delta = GetWorld()->GetDeltaSeconds();
-		const float SmoothedRate = FMath::FInterpTo(LeftStickX_Rate_Previous, Rate, Delta, 30.0f);
-
-		
 		IIPlayerPawn::Execute_Input_Axis_LeftStickX(ControlledPawn, Rate);
-		LeftStickX_Rate_Previous = SmoothedRate;
-	}
-	else
-	{
-		LeftStickX_Rate_Previous = Rate;
+		
 	}
 }
 
@@ -237,18 +229,23 @@ void APlayerControllerBase::Internal_Axis_LeftStickY(const float Rate)
 {
 	if(ControlledPawn != nullptr && Rate != 0.0f)
 	{
-		const float Delta = GetWorld()->GetDeltaSeconds();
-		const float SmoothedRate = FMath::FInterpTo(LeftStickY_Rate_Previous, Rate, Delta, 30.0f);
 		IIPlayerPawn::Execute_Input_Axis_LeftStickY(ControlledPawn, Rate);
-		LeftStickY_Rate_Previous = SmoothedRate;
-	}
-	else
-	{
-		LeftStickY_Rate_Previous = 0.0f;
+		
 	}
 }
 
-void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
+void APlayerControllerBase::Internal_Axis_MouseX(const float Rate)
+{
+	MoveCursor(Rate, EAxis::Y);
+	
+}
+
+void APlayerControllerBase::Internal_Axis_MouseY(const float Rate)
+{
+	MoveCursor(Rate, EAxis::X);
+}
+
+void APlayerControllerBase::MoveCursor_Gamepad(const float Rate, const EAxis::Type Axis)
 {
 	if(Rate == 0.0f) return;
 	
@@ -278,8 +275,47 @@ void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
 
 	const float InterpX = FMath::FInterpTo(MousePositionX, X, Delta, 30.f);
 	const float InterpY = FMath::FInterpTo(MousePositionY, Y, Delta, 30.f);
+	
+	const int32 NewPositionX = UKismetMathLibrary::Clamp(InterpX, VIEWPORT_CURSOR_PADDING, ViewportSizeX - VIEWPORT_CURSOR_PADDING);
+	const int32 NewPositionY = UKismetMathLibrary::Clamp(InterpY, VIEWPORT_CURSOR_PADDING, ViewportSizeY - VIEWPORT_CURSOR_PADDING);
 
-	UDebugHelper::LOG(FString::Printf(TEXT("%f, %f"), InterpX, MousePositionX));
+	SetMouseLocation(NewPositionX, NewPositionY);
+}
+
+void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
+{
+	if(Rate == 0.0f) return;
+
+	const float Clamped_Rate = FMath::Clamp(Rate, -1.0f, 1.0f);
+	
+	float MousePositionX, MousePositionY;
+	int32 ViewportSizeX, ViewportSizeY;
+	
+	GetMousePosition(MousePositionX, MousePositionY);
+
+	float X = MousePositionX;
+	float Y = MousePositionY;
+	const float Delta = GetWorld()->GetDeltaSeconds();
+	
+	const float Speed =  Clamped_Rate *  (BaseCursorSpeed/ Delta);
+
+	if(Axis == EAxis::X)
+	{
+		Y = MousePositionY - Speed;
+	}
+
+	if(Axis == EAxis::Y)
+	{
+		X = MousePositionX + Speed;
+	}
+
+	
+	GetViewportSize(ViewportSizeX, ViewportSizeY);
+
+	const float InterpX = FMath::FInterpTo(MousePositionX, X, Delta, 30.f);
+	const float InterpY = FMath::FInterpTo(MousePositionY, Y, Delta, 30.f);
+
+	
 	
 	const int32 NewPositionX = UKismetMathLibrary::Clamp(InterpX, VIEWPORT_CURSOR_PADDING, ViewportSizeX - VIEWPORT_CURSOR_PADDING);
 	const int32 NewPositionY = UKismetMathLibrary::Clamp(InterpY, VIEWPORT_CURSOR_PADDING, ViewportSizeY - VIEWPORT_CURSOR_PADDING);
@@ -297,4 +333,11 @@ void APlayerControllerBase::SetPawn(APawn* InPawn)
 	}
 	
 	Super::SetPawn(InPawn);
+}
+
+void APlayerControllerBase::StopCursor()
+{
+	float X, Y;
+	GetMousePosition(X, Y);
+	SetMouseLocation(X, Y);
 }

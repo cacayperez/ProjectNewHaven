@@ -27,7 +27,13 @@ public:
 	static AActor* GetObjectOnCursor(APlayerController* Controller);
 
 	UFUNCTION(BlueprintCallable)
-	static bool GetCursorLocation(APlayerController* Controller, FVector& Location);
+	static bool TraceCursorProjection(APlayerController* Controller, const ETraceTypeQuery Query, FVector& Location);
+
+	UFUNCTION(BlueprintCallable)
+	static bool TraceFloorViaCursor(APlayerController* Controller, FVector& FloorLocation);
+
+	UFUNCTION(BlueprintCallable)
+	static void SnapCursorToActor(APlayerController* Controller, AActor* Actor);
 
 	UFUNCTION(BlueprintCallable)
 	static APawn* GetActivePawn(UObject* Context);

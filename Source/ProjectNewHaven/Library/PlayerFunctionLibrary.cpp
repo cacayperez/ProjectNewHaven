@@ -5,6 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "ProjectNewHaven/Config/GameplaySettings.h"
+#include "ProjectNewHaven/Config/ViewportSettings.h"
 #include "ProjectNewHaven/Debug/DebugHelper.h"
 #include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
 #include "ProjectNewHaven/Interfaces/Player/IPlayerPawn.h"
@@ -62,27 +63,68 @@ AActor* UPlayerFunctionLibrary::GetObjectOnCursor(APlayerController* Controller)
 	return nullptr;
 }
 
-bool UPlayerFunctionLibrary::GetCursorLocation(APlayerController* Controller, FVector& Location)
+bool UPlayerFunctionLibrary::TraceCursorProjection(APlayerController* Controller, const ETraceTypeQuery Query, FVector& Location)
 {
 	if(Controller == nullptr) return false;
 	
 	FHitResult HitResult;
-	const bool bHit = Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_SceneObject), true, HitResult);
 	
-	if(bHit)
-	{
-		UPrimitiveComponent* GrabbedComponent = HitResult.GetComponent();
-		
-		FVector Dir, Loc;
-		Controller->DeprojectMousePositionToWorld(Loc, Dir);
-		const float Distance = HitResult.Distance;
 
-		Dir = Dir * Distance ;
-		Location = Loc + Dir;
-		
+	FVector2D MouseLocation;
+	
+	int32 ViewportSizeX, ViewportSizeY;
+	Controller->GetViewportSize(ViewportSizeX, ViewportSizeY);
+	Controller->GetMousePosition(MouseLocation.X, MouseLocation.Y);
+
+	constexpr  float Top = VIEWPORT_CURSOR_PADDING;
+	constexpr float Left = VIEWPORT_CURSOR_PADDING;
+	const float Bottom = ViewportSizeY - VIEWPORT_CURSOR_PADDING;
+	const float Right = ViewportSizeX - VIEWPORT_CURSOR_PADDING;
+	
+	bool bIsWithinViewport = true;
+
+	if(MouseLocation.X < Left || MouseLocation.X > Right)
+	{
+		bIsWithinViewport = false;
+	}
+	
+	if(MouseLocation.Y < Top || MouseLocation.Y > Bottom)
+	{
+		bIsWithinViewport = false;
 	}
 
-	return bHit;
+	if(!bIsWithinViewport)
+	{
+		MouseLocation.X = FMath::Clamp(MouseLocation.X, Left, Right);
+		MouseLocation.Y = FMath::Clamp(MouseLocation.Y, Top, Bottom);
+	}
+
+	Controller->GetHitResultUnderCursorByChannel(Query, false, HitResult);
+	
+	FVector WorldDirection, WorldLocation;
+	
+	UGameplayStatics::DeprojectScreenToWorld(Controller, MouseLocation, WorldLocation, WorldDirection);
+	WorldDirection = WorldDirection * HitResult.Distance;
+	Location = WorldLocation + WorldDirection;
+
+	
+	return bIsWithinViewport;
+}
+
+bool UPlayerFunctionLibrary::TraceFloorViaCursor(APlayerController* Controller, FVector& FloorLocation)
+{
+	return TraceCursorProjection(Controller, UEngineTypes::ConvertToTraceType(ECC_FLoor), FloorLocation);
+}
+
+void UPlayerFunctionLibrary::SnapCursorToActor(APlayerController* Controller, AActor* Actor)
+{
+	if(Controller  == nullptr || Actor == nullptr) return;
+	
+	const FVector ActorLocation = Actor->GetActorLocation();
+	FVector2D ScreenPosition;
+	
+	Controller->ProjectWorldLocationToScreen(ActorLocation, ScreenPosition);
+	Controller->SetMouseLocation(ScreenPosition.X, ScreenPosition.Y);
 }
 
 APawn* UPlayerFunctionLibrary::GetActivePawn(UObject* Context)

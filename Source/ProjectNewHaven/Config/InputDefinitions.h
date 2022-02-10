@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+// Mouse
+#define INPUT_AXIS_MOUSE_X "Axis_MouseX"
+#define INPUT_AXIS_MOUSE_Y "Axis_MouseY"
+
 // Left Stick 
 #define INPUT_AXIS_LEFT_Y "Axis_LeftStickY"
 #define INPUT_AXIS_LEFT_X "Axis_LeftStickX"

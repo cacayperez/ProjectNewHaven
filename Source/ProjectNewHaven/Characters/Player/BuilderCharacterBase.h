@@ -35,8 +35,6 @@ class PROJECTNEWHAVEN_API ABuilderCharacterBase : public ACharacter, public IIPl
 	UPROPERTY()
 	class APlayerCameraManager* CameraManager;
 
-	UPROPERTY()
-	float TestDelta = 0;
 	
 public:
 	// Sets default values for this character's properties
@@ -65,5 +63,8 @@ public:
 
 	UFUNCTION()
 	void GrabSceneObject(AActor* Actor);
+
+	UFUNCTION()
+	void PlaceActiveSceneObject();
 
 };
