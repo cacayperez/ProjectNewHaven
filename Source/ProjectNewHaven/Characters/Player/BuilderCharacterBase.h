@@ -28,6 +28,8 @@ class PROJECTNEWHAVEN_API ABuilderCharacterBase : public ACharacter, public IIPl
 
 	UPROPERTY()
 	class AActor* ActiveSceneObject;
+	UPROPERTY()
+	class AActor* PreviousSceneObject;
 
 	UPROPERTY()
 	class APlayerControllerBase* PlayerControllerBase;
@@ -66,5 +68,8 @@ public:
 
 	UFUNCTION()
 	void PlaceActiveSceneObject();
+
+	UFUNCTION()
+	void SmoothSnapToCursor(AActor* Actor, const float DeltaTime = 0.0f);
 
 };

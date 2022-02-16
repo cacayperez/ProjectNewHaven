@@ -35,8 +35,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool HasCollided();
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	FVector GetBaseLocation() const;
+	// UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	// FVector GetBaseLocation() const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void OnPlayerCharacter_Select();
@@ -49,8 +49,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void OnPlayerCharacter_Interact();
-
-
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void OnBuilderCharacter_Select();
 

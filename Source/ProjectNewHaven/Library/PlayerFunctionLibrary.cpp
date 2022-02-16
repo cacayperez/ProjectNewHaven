@@ -36,16 +36,7 @@ APawn* UPlayerFunctionLibrary::ValidatePlayerPawn(APawn* Pawn)
 	return nullptr;
 }
 
-AActor* UPlayerFunctionLibrary::Actor_IsSceneObject(AActor* Actor)
-{
-	AActor* SubjectActor = Actor;
-	if(SubjectActor != nullptr && SubjectActor->GetClass()->ImplementsInterface(UISceneObject::StaticClass()) == true)
-	{
-		return SubjectActor;
-	}
 
-	return nullptr;
-}
 
 AActor* UPlayerFunctionLibrary::GetObjectOnCursor(APlayerController* Controller)
 {
@@ -63,13 +54,47 @@ AActor* UPlayerFunctionLibrary::GetObjectOnCursor(APlayerController* Controller)
 	return nullptr;
 }
 
+bool UPlayerFunctionLibrary::Actor_IsSceneObject(const AActor* Actor)
+{
+	if(IsValid(Actor) && Actor->GetClass()->ImplementsInterface(UISceneObject::StaticClass()) == true)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void UPlayerFunctionLibrary::GetGridLocation(const FVector BaseLocation, FVector& GridLocation, const bool bZSnap)
+{
+	const float GridSize = 50.0f;
+	const float SnapX = FMath::CeilToFloat(BaseLocation.X / GridSize) * GridSize;
+	const float SnapY = FMath::CeilToFloat(BaseLocation.Y / GridSize) * GridSize;
+	const float SnapZ = FMath::CeilToFloat(BaseLocation.Z / GridSize) * GridSize;
+	GridLocation = FVector(SnapX, SnapY, SnapZ);
+
+	
+	UDebugHelper::LOG(FString::Printf(TEXT("%f, %f, %f"), SnapX, SnapY, SnapZ));
+	//
+	// if(bZSnap)
+	// {
+	// 	
+	// 	GridLocation = FVector(SnapX, SnapY, SnapZ);
+	// }
+	// else
+	// {
+	// 	GridLocation = FVector(SnapX, SnapY, BaseLocation.Z);
+	// }
+	// 	
+
+	
+}
+
 bool UPlayerFunctionLibrary::TraceCursorProjection(APlayerController* Controller, const ETraceTypeQuery Query, FVector& Location)
 {
-	if(Controller == nullptr) return false;
-	
-	FHitResult HitResult;
-	
+	const bool bTrue = IsValid(Controller);
+	if(!bTrue) return false;
 
+	FHitResult HitResult;
 	FVector2D MouseLocation;
 	
 	int32 ViewportSizeX, ViewportSizeY;
@@ -115,6 +140,8 @@ bool UPlayerFunctionLibrary::TraceFloorViaCursor(APlayerController* Controller, 
 {
 	return TraceCursorProjection(Controller, UEngineTypes::ConvertToTraceType(ECC_FLoor), FloorLocation);
 }
+
+
 
 void UPlayerFunctionLibrary::SnapCursorToActor(APlayerController* Controller, AActor* Actor)
 {

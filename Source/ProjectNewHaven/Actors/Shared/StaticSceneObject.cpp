@@ -4,19 +4,18 @@
 #include "StaticSceneObject.h"
 
 #include "Components/BoxComponent.h"
-#include "GameFramework/MovementComponent.h"
 #include "ProjectNewHaven/Debug/DebugHelper.h"
-#include "ProjectNewHaven/Library/BuilderFunctionLibrary.h"
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
 
 
 // Sets default values
 AStaticSceneObject::AStaticSceneObject()
 {
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	Base = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+	_RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	//_RootComponent->SetBoxExtent(FVector(50.0f, 50.0f, 0.0f));
 	
-	RootComponent = Base;
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	RootComponent = _RootComponent;
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetCollisionProfileName(FName("SceneObject"));
 }
@@ -29,11 +28,6 @@ void AStaticSceneObject::BeginPlay()
 	
 	MeshComponent->OnEndCursorOver.AddDynamic(this, &AStaticSceneObject::OnCursor_HoverOut);
 
-}
-
-FVector AStaticSceneObject::GetBaseLocation_Implementation() const
-{
-	return Base->GetComponentLocation();
 }
 
 void AStaticSceneObject::OnBuilderCharacter_Select_Implementation()

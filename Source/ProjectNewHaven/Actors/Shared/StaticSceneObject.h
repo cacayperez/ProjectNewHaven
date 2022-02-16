@@ -12,11 +12,16 @@ UCLASS()
 class PROJECTNEWHAVEN_API AStaticSceneObject : public AActor, public IISceneObject
 {
 	GENERATED_BODY()
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Mesh", meta = (AllowPrivateAccess = "true"))
 	class UMeshComponent* MeshComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Mesh", meta = (AllowPrivateAccess = "true"))
-	class UBoxComponent* Base;
+	class USceneComponent* _RootComponent;
+
+	
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Mesh", meta = (AllowPrivateAccess = "true"))
+	// class UBoxComponent* Base;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool bIsGrabbed = false;
@@ -40,7 +45,7 @@ protected:
 public:
 
 
-	virtual FVector GetBaseLocation_Implementation() const override;
+	// virtual FVector GetBaseLocation_Implementation() const override;
 	FORCEINLINE class UMeshComponent* GetMeshComponent() const { return MeshComponent; }
 
 	virtual void OnBuilderCharacter_Select_Implementation() override;

@@ -6,11 +6,9 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "ProjectNewHaven/Debug/DebugHelper.h"
 #include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
@@ -19,14 +17,14 @@
 // Sets default values
 ABuilderCharacterBase::ABuilderCharacterBase()
 {
-	GetCapsuleComponent()->SetCollisionProfileName("Spectator");
+	//GetCapsuleComponent()->SetCollisionProfileName("Spectator");
 	GetMesh()->SetCollisionProfileName("Spectator");
 	
 	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
-	CameraBoom->TargetArmLength = 800.f;
+	CameraBoom->TargetArmLength = 1000.f;
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
 	CameraBoom->bDoCollisionTest = false;
 	// CameraBoom->bEnableCameraLag = true;
@@ -49,20 +47,32 @@ ABuilderCharacterBase::ABuilderCharacterBase()
 void ABuilderCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	if(IsValid(GetPlayerControllerBase()) && IsValid(ActiveSceneObject))
 	{
-		FVector ActorLocation = ActiveSceneObject->GetActorLocation();
-		FVector NewLocation;
-		const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
-
-		if(bIsInViewportBounds)
-		{
-			//NewLocation.Z = GetActorLocation().Z;;
-
-			const FVector Interp = UKismetMathLibrary::VInterpTo(ActorLocation, NewLocation, DeltaTime, 20.0f);
-		
-			ActiveSceneObject->SetActorLocation(Interp);
-		}
+		SmoothSnapToCursor(ActiveSceneObject, DeltaTime);
+		// const FVector ActorLocation = ActiveSceneObject->GetActorLocation();
+		// FVector NewLocation;
+		// const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
+		//
+		// if(bIsInViewportBounds)
+		// {
+		// 	const float GridSize = 50.0f;
+		// 	const float SnapX = FMath::CeilToFloat(NewLocation.X / GridSize) * GridSize;
+		// 	const float SnapY = FMath::CeilToFloat(NewLocation.Y / GridSize) * GridSize;
+		// 	const float SnapZ = FMath::CeilToFloat(NewLocation.Z / GridSize) * GridSize;
+		//
+		// 	FVector SnapLocation;
+		// 	NewLocation.Z = ActorLocation.Z;
+		// 	UPlayerFunctionLibrary::GetGridLocation(NewLocation, SnapLocation);
+		//
+		// 	
+		// 	
+		// 	const FVector SmoothedLocation = UKismetMathLibrary::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f);
+		// 	//const FVector SmoothedLocation = UKismetMathLibrary::VInterpTo(ActorLocation, NewLocation, DeltaTime, 20.0f);
+		//
+		// 	ActiveSceneObject->SetActorLocation(SmoothedLocation);
+		// }
 		
 		
 	}
@@ -99,10 +109,8 @@ void ABuilderCharacterBase::PlayerAction_Interact_Implementation(AActor* Actor)
 
 	if(ActiveSceneObject == nullptr)
 	{
-		if(Actor == nullptr) return;
-		
-		const AActor* LocalActor = UPlayerFunctionLibrary::Actor_IsSceneObject(Actor);
-		if(IsValid(LocalActor))
+		const bool bIsValidSceneObject = UPlayerFunctionLibrary::Actor_IsSceneObject(Actor);
+		if(bIsValidSceneObject)
 		{
 			IISceneObject::Execute_OnBuilderCharacter_Interact(Actor);
 			UPlayerFunctionLibrary::SnapCursorToActor(Cast<APlayerController>(Controller), Actor);
@@ -118,7 +126,7 @@ void ABuilderCharacterBase::PlayerAction_Interact_Implementation(AActor* Actor)
 
 void ABuilderCharacterBase::PlayerAction_Select_Implementation(AActor* Actor)
 {
-	if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor) != nullptr)
+	if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor))
 	{
 		IISceneObject::Execute_OnBuilderCharacter_Select(Actor);
 	}
@@ -126,7 +134,7 @@ void ABuilderCharacterBase::PlayerAction_Select_Implementation(AActor* Actor)
 
 void ABuilderCharacterBase::PlayerAction_Deselect_Implementation(AActor* Actor)
 {
-	if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor) != nullptr)
+	if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor))
 	{
 		IISceneObject::Execute_OnBuilderCharacter_Deselect(Actor);
 	}
@@ -185,16 +193,42 @@ void ABuilderCharacterBase::GrabSceneObject(AActor* Actor)
 void ABuilderCharacterBase::PlaceActiveSceneObject()
 {
 	if(ActiveSceneObject == nullptr) return;
-	if(Controller == nullptr) return;;
+	
+	
 	SetActorTickEnabled(false);
-	FVector FloorLocation;
-	APlayerController* PlayerController = Cast<APlayerController>(Controller);
-	UPlayerFunctionLibrary::TraceFloorViaCursor(PlayerController, FloorLocation);
-	
-	ActiveSceneObject->SetActorLocation(FloorLocation);
-	
-
-	// To-do
-	// add floor vector and bottom vector of scene object
+	SmoothSnapToCursor(ActiveSceneObject);
+	PreviousSceneObject = ActiveSceneObject;
 	ActiveSceneObject = nullptr;
+
+	
+}
+
+void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaTime)
+{
+	const bool bTrue = IsValid(Actor);
+	if(!bTrue) return;
+	
+	const FVector ActorLocation = Actor->GetActorLocation();
+	FVector NewLocation;
+	const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
+
+	
+	if(bIsInViewportBounds)
+	{
+		FVector SnapLocation;
+		NewLocation.Z = ActorLocation.Z;
+		UPlayerFunctionLibrary::GetGridLocation(NewLocation, SnapLocation);
+
+		if(DeltaTime != 0.0f)
+		{
+			const FVector SmoothedLocation = UKismetMathLibrary::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f);
+			Actor->SetActorLocation(SmoothedLocation);
+		}
+		else
+		{
+			Actor->SetActorLocation(SnapLocation);
+		}
+		
+	}
+		
 }

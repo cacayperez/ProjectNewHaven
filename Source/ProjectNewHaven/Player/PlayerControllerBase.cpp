@@ -19,20 +19,23 @@ APlayerControllerBase::APlayerControllerBase()
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 	bEnableTouchEvents = false;
-
+	
 }
 
 void APlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
-
 	SetInputMode(FInputModeGameAndUI());
+	
 }
 
 void APlayerControllerBase::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
+	InputComponent->BindAxis(INPUT_AXIS_MOUSE_X, this, &APlayerControllerBase::Internal_Axis_MouseX);
+	InputComponent->BindAxis(INPUT_AXIS_MOUSE_Y, this, &APlayerControllerBase::Internal_Axis_MouseY);
+	
 	// For Forward and Right Movement
 	InputComponent->BindAxis(INPUT_AXIS_LEFT_Y, this, &APlayerControllerBase::Internal_Axis_LeftStickY);
 	InputComponent->BindAxis(INPUT_AXIS_LEFT_X, this, &APlayerControllerBase::Internal_Axis_LeftStickX);
@@ -236,13 +239,13 @@ void APlayerControllerBase::Internal_Axis_LeftStickY(const float Rate)
 
 void APlayerControllerBase::Internal_Axis_MouseX(const float Rate)
 {
-	MoveCursor(Rate, EAxis::Y);
-	
+
+	UDebugHelper::LOG(FString::Printf(TEXT("%f"), Rate));
 }
 
 void APlayerControllerBase::Internal_Axis_MouseY(const float Rate)
 {
-	MoveCursor(Rate, EAxis::X);
+	
 }
 
 void APlayerControllerBase::MoveCursor_Gamepad(const float Rate, const EAxis::Type Axis)

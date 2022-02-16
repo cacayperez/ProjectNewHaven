@@ -21,13 +21,18 @@ public:
 	static APawn* ValidatePlayerPawn(APawn* Pawn);
 	
 	UFUNCTION(BlueprintCallable)
-	static AActor* Actor_IsSceneObject(AActor* Actor);
-	
-	UFUNCTION(BlueprintCallable)
 	static AActor* GetObjectOnCursor(APlayerController* Controller);
 
 	UFUNCTION(BlueprintCallable)
+	static bool Actor_IsSceneObject(const AActor* Actor);
+
+
+	UFUNCTION(BlueprintCallable)
+	static void GetGridLocation(const FVector BaseLocation, FVector& GridLocation, const bool bZSnap = false);
+	
+	UFUNCTION(BlueprintCallable)
 	static bool TraceCursorProjection(APlayerController* Controller, const ETraceTypeQuery Query, FVector& Location);
+	
 
 	UFUNCTION(BlueprintCallable)
 	static bool TraceFloorViaCursor(APlayerController* Controller, FVector& FloorLocation);
