@@ -12,7 +12,6 @@
 AStaticSceneObject::AStaticSceneObject()
 {
 	_RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	//_RootComponent->SetBoxExtent(FVector(50.0f, 50.0f, 0.0f));
 	
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = _RootComponent;
@@ -66,20 +65,6 @@ void AStaticSceneObject::SetGrab_Implementation(bool bVal)
 	bIsGrabbed = bVal;
 
 }
-
-/*void AStaticSceneObject::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	UDebugHelper::LOG(TEXT("HELLOO"));
-	//bHasCollided = UBuilderFunctionLibrary::IsWall(OtherComp);
-
-	
-}
-
-void AStaticSceneObject::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	bHasCollided = false;
-}*/
 
 void AStaticSceneObject::OnCursor_HoverIn(UPrimitiveComponent * Component)
 {
