@@ -240,7 +240,6 @@ void APlayerControllerBase::Internal_Axis_LeftStickY(const float Rate)
 void APlayerControllerBase::Internal_Axis_MouseX(const float Rate)
 {
 
-	UDebugHelper::LOG(FString::Printf(TEXT("%f"), Rate));
 }
 
 void APlayerControllerBase::Internal_Axis_MouseY(const float Rate)
@@ -250,7 +249,11 @@ void APlayerControllerBase::Internal_Axis_MouseY(const float Rate)
 
 void APlayerControllerBase::MoveCursor_Gamepad(const float Rate, const EAxis::Type Axis)
 {
-	if(Rate == 0.0f) return;
+	if(Rate == 0.0f)
+	{
+		AccumulatedCursorVelocity = 0.0f;
+		return;
+	}
 	
 	float MousePositionX, MousePositionY;
 	int32 ViewportSizeX, ViewportSizeY;
@@ -260,8 +263,11 @@ void APlayerControllerBase::MoveCursor_Gamepad(const float Rate, const EAxis::Ty
 	float X = MousePositionX;
 	float Y = MousePositionY;
 	const float Delta = GetWorld()->GetDeltaSeconds();
-	
-	const float Speed =  Rate *  (BaseCursorSpeed/ Delta);
+
+	const float Velocity = AccumulatedCursorVelocity + (BaseCursorSpeed/ Delta);
+	const float VelocityCap = 20.0f;
+	AccumulatedCursorVelocity = (AccumulatedCursorVelocity < VelocityCap) ?  Velocity: VelocityCap;
+	const float Speed =  Rate *  AccumulatedCursorVelocity;
 
 	if(Axis == EAxis::X)
 	{

@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ProjectNewHaven/Debug/DebugHelper.h"
 #include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
@@ -183,20 +184,23 @@ void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaT
 	const bool bTrue = IsValid(Actor);
 	if(!bTrue) return;
 	
-	const FVector ActorLocation = Actor->GetActorLocation();
-	FVector NewLocation;
-	const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
+	FVector ActorLocation = Actor->GetActorLocation();
+	FVector Floor;
+	const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), Floor);
 
 	
 	if(bIsInViewportBounds)
 	{
 		FVector SnapLocation;
-		NewLocation.Z = ActorLocation.Z;
-		UPlayerFunctionLibrary::GetGridLocation(NewLocation, SnapLocation);
-
+		const float ZOffset = 2.5f;
+		Floor.Z = Floor.Z - ZOffset;
+		UPlayerFunctionLibrary::GetGridLocation(Floor, SnapLocation);
+		//FMath::CeilToFloat(BaseLocation.X / GridSize) * GridSize,
 		if(DeltaTime != 0.0f)
 		{
+
 			const FVector SmoothedLocation = UKismetMathLibrary::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f);
+
 			Actor->SetActorLocation(SmoothedLocation);
 		}
 		else

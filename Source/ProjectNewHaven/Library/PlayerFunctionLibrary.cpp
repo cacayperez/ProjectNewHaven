@@ -6,7 +6,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectNewHaven/Config/GameplaySettings.h"
 #include "ProjectNewHaven/Config/ViewportSettings.h"
-#include "ProjectNewHaven/Debug/DebugHelper.h"
 #include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
 #include "ProjectNewHaven/Interfaces/Player/IPlayerPawn.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
@@ -64,28 +63,17 @@ bool UPlayerFunctionLibrary::Actor_IsSceneObject(const AActor* Actor)
 	return false;
 }
 
-void UPlayerFunctionLibrary::GetGridLocation(const FVector BaseLocation, FVector& GridLocation, const bool bZSnap)
+void UPlayerFunctionLibrary::GetGridLocation(const FVector BaseLocation, FVector& GridLocation)
 {
-	const float GridSize = 50.0f;
-	const float SnapX = FMath::CeilToFloat(BaseLocation.X / GridSize) * GridSize;
-	const float SnapY = FMath::CeilToFloat(BaseLocation.Y / GridSize) * GridSize;
-	const float SnapZ = FMath::CeilToFloat(BaseLocation.Z / GridSize) * GridSize;
-	GridLocation = FVector(SnapX, SnapY, SnapZ);
+	const float GridSize = 25.0f;
 
+	const FVector SnapLocation = FVector (
+			FMath::CeilToFloat(BaseLocation.X / GridSize) * GridSize,
+			FMath::CeilToFloat(BaseLocation.Y / GridSize) * GridSize,
+			FMath::CeilToFloat(BaseLocation.Z / GridSize) * GridSize
+		);
 	
-	UDebugHelper::LOG(FString::Printf(TEXT("%f, %f, %f"), SnapX, SnapY, SnapZ));
-	//
-	// if(bZSnap)
-	// {
-	// 	
-	// 	GridLocation = FVector(SnapX, SnapY, SnapZ);
-	// }
-	// else
-	// {
-	// 	GridLocation = FVector(SnapX, SnapY, BaseLocation.Z);
-	// }
-	// 	
-
+	GridLocation = SnapLocation;
 	
 }
 
@@ -124,14 +112,16 @@ bool UPlayerFunctionLibrary::TraceCursorProjection(APlayerController* Controller
 		MouseLocation.Y = FMath::Clamp(MouseLocation.Y, Top, Bottom);
 	}
 
-	Controller->GetHitResultUnderCursorByChannel(Query, false, HitResult);
+	Controller->GetHitResultUnderCursorByChannel(Query, true, HitResult);
 	
 	FVector WorldDirection, WorldLocation;
 	
 	UGameplayStatics::DeprojectScreenToWorld(Controller, MouseLocation, WorldLocation, WorldDirection);
 	WorldDirection = WorldDirection * HitResult.Distance;
-	Location = WorldLocation + WorldDirection;
-
+	//Location = WorldLocation + WorldDirection;
+	Location = HitResult.Location;
+	// const float ZOffset = 2.5f;
+	// Location.Z = Location.Z - ZOffset;
 	
 	return bIsWithinViewport;
 }
