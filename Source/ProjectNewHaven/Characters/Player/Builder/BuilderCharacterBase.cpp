@@ -169,15 +169,15 @@ void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaT
 {
 	if(!IsValid(Actor)) return;
 	
-	const FVector ActorLocation = Actor->GetActorLocation();
+	FVector ActorLocation = Actor->GetActorLocation();
 	FVector NewLocation;
 	const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
-	
+	NewLocation.Z = NewLocation.Z - 2.f;
 	if(bIsInViewportBounds)
 	{
 		FVector SnapLocation;
 		UPlayerFunctionLibrary::GetGridLocation(NewLocation, SnapLocation);
-		
+		//ActorLocation.Z = SnapLocation.Z;
 		SnapLocation = (DeltaTime != 0.0f) ?
 			FMath::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f) :
 			SnapLocation;
