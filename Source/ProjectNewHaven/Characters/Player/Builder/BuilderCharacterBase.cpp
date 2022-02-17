@@ -9,7 +9,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
@@ -76,34 +75,37 @@ void ABuilderCharacterBase::PlayerAction_Move_Implementation(const float Value, 
 
 void ABuilderCharacterBase::PlayerAction_Interact_Implementation(AActor* Actor)
 {
-	if(ActiveSceneObject == nullptr)
+	const bool bIsValidSceneObject = UPlayerFunctionLibrary::Actor_IsSceneObject(Actor);
+
+	if(bIsValidSceneObject)
 	{
-		const bool bIsValidSceneObject = UPlayerFunctionLibrary::Actor_IsSceneObject(Actor);
-		if(bIsValidSceneObject)
+		if(ActiveSceneObject == nullptr)
 		{
 			GrabSceneObject(Actor);
 		}
-	}
-	else
-	{
-		PlaceActiveSceneObject();
+		else
+		{
+			PlaceActiveSceneObject();
+		}
+
+		IISceneObject::Execute_OnBuilderCharacter_Interact(Actor);
 	}
 }
 
 void ABuilderCharacterBase::PlayerAction_Select_Implementation(AActor* Actor)
 {
-	if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor))
-	{
-		IISceneObject::Execute_OnBuilderCharacter_Select(Actor);
-	}
+	// if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor))
+	// {
+	// 	IISceneObject::Execute_OnBuilderCharacter_Select(Actor);
+	// }
 }
 
 void ABuilderCharacterBase::PlayerAction_Deselect_Implementation(AActor* Actor)
 {
-	if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor))
-	{
-		IISceneObject::Execute_OnBuilderCharacter_Deselect(Actor);
-	}
+	// if(UPlayerFunctionLibrary::Actor_IsSceneObject(Actor))
+	// {
+	// 	IISceneObject::Execute_OnBuilderCharacter_Deselect(Actor);
+	// }
 }
 
 void ABuilderCharacterBase::Input_Axis_LeftStickX_Implementation(const float Rate)
@@ -130,7 +132,7 @@ void ABuilderCharacterBase::Input_Button_3_Pressed_Implementation()
 		APlayerController* PlayerController = Cast<APlayerController>(Controller);
 		if(IsValid(PlayerController))
 		{
-			AActor* Actor = UPlayerFunctionLibrary::GetObjectOnCursor(PlayerController);
+			AActor* Actor = (ActiveSceneObject) ? ActiveSceneObject : UPlayerFunctionLibrary::GetObjectOnCursor(PlayerController);
 			Execute_PlayerAction_Interact(this, Actor);
 		}
 	}
@@ -149,9 +151,6 @@ void ABuilderCharacterBase::Input_Button_8_Released_Implementation()
 
 void ABuilderCharacterBase::GrabSceneObject(AActor* Actor)
 {
-	IISceneObject::Execute_OnBuilderCharacter_Interact(Actor);
-	IISceneObject::Execute_SetGrab(Actor, true);
-
 	ActiveSceneObject = Actor;
 	SetActorTickEnabled(true);
 }
@@ -177,12 +176,12 @@ void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaT
 	if(bIsInViewportBounds)
 	{
 		FVector SnapLocation;
-		NewLocation.Z = ActorLocation.Z;
 		UPlayerFunctionLibrary::GetGridLocation(NewLocation, SnapLocation);
-
+		
 		SnapLocation = (DeltaTime != 0.0f) ?
 			FMath::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f) :
 			SnapLocation;
+
 		
 		Actor->SetActorLocation(SnapLocation);
 	}

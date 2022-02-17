@@ -64,16 +64,14 @@ bool UPlayerFunctionLibrary::Actor_IsSceneObject(const AActor* Actor)
 	return false;
 }
 
-void UPlayerFunctionLibrary::GetGridLocation(const FVector BaseLocation, FVector& GridLocation, const bool bZSnap)
+void UPlayerFunctionLibrary::GetGridLocation(const FVector BaseLocation, FVector& GridLocation, const float ZOffset)
 {
-	const float GridSize = 50.0f;
-	const float SnapX = FMath::CeilToFloat(BaseLocation.X / GridSize) * GridSize;
-	const float SnapY = FMath::CeilToFloat(BaseLocation.Y / GridSize) * GridSize;
-	const float SnapZ = FMath::CeilToFloat(BaseLocation.Z / GridSize) * GridSize;
-	GridLocation = FVector(SnapX, SnapY, SnapZ);
-
-
-	UDebugHelper::LOG(FString::Printf(TEXT("%f, %f, %f"), SnapX, SnapY, SnapZ));
+	constexpr float GridSize = 25.0f;
+	GridLocation = FVector(
+			FMath::CeilToFloat(BaseLocation.X / GridSize) * GridSize,
+			FMath::CeilToFloat(BaseLocation.Y / GridSize) * GridSize,
+			FMath::CeilToFloat(BaseLocation.Z / GridSize) * GridSize
+		);
 }
 
 bool UPlayerFunctionLibrary::TraceCursorProjection(APlayerController* Controller, const ETraceTypeQuery Query, FVector& Location)
