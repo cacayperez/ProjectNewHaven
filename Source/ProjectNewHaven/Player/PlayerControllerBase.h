@@ -27,7 +27,8 @@ class PROJECTNEWHAVEN_API APlayerControllerBase : public APlayerController
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	float CursorSensitivity = 0.15f;
 
-	
+	UFUNCTION()
+	bool HasValidPawn();
 
 public:
 	APlayerControllerBase();
@@ -103,12 +104,8 @@ protected:
 	UFUNCTION()
 	void Internal_Axis_MouseY(const float Rate);
 	
-
 	UFUNCTION()
 	void MoveCursor_Gamepad(const float Rate, const EAxis::Type Axis);
-
-	UFUNCTION()
-	void MoveCursor(const float Rate, const EAxis::Type Axis);
 	
 	virtual void SetPawn(APawn* InPawn) override;
 

@@ -15,7 +15,7 @@ bool UPlayerFunctionLibrary::IsPlayerPawn(APawn* Pawn)
 {
 	APawn* SubjectPawn = Pawn;
 	bool bVal = false;
-	
+
 	if(SubjectPawn != nullptr && SubjectPawn->GetClass()->ImplementsInterface(UIPlayerPawn::StaticClass()) == true)
 	{
 		bVal = true;
@@ -27,7 +27,7 @@ bool UPlayerFunctionLibrary::IsPlayerPawn(APawn* Pawn)
 APawn* UPlayerFunctionLibrary::ValidatePlayerPawn(APawn* Pawn)
 {
 	APawn* SubjectPawn = Pawn;
-	
+
 	if(SubjectPawn != nullptr && SubjectPawn->GetClass()->ImplementsInterface(UIPlayerPawn::StaticClass()) == true)
 	{
 		return SubjectPawn;
@@ -41,7 +41,7 @@ APawn* UPlayerFunctionLibrary::ValidatePlayerPawn(APawn* Pawn)
 AActor* UPlayerFunctionLibrary::GetObjectOnCursor(APlayerController* Controller)
 {
 	if(Controller == nullptr) return nullptr;
-	
+
 	FHitResult HitResult;
 	const bool bHit = Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_SceneObject), true, HitResult);
 
@@ -72,67 +72,43 @@ void UPlayerFunctionLibrary::GetGridLocation(const FVector BaseLocation, FVector
 	const float SnapZ = FMath::CeilToFloat(BaseLocation.Z / GridSize) * GridSize;
 	GridLocation = FVector(SnapX, SnapY, SnapZ);
 
-	
-	UDebugHelper::LOG(FString::Printf(TEXT("%f, %f, %f"), SnapX, SnapY, SnapZ));
-	//
-	// if(bZSnap)
-	// {
-	// 	
-	// 	GridLocation = FVector(SnapX, SnapY, SnapZ);
-	// }
-	// else
-	// {
-	// 	GridLocation = FVector(SnapX, SnapY, BaseLocation.Z);
-	// }
-	// 	
 
-	
+	UDebugHelper::LOG(FString::Printf(TEXT("%f, %f, %f"), SnapX, SnapY, SnapZ));
 }
 
 bool UPlayerFunctionLibrary::TraceCursorProjection(APlayerController* Controller, const ETraceTypeQuery Query, FVector& Location)
 {
-	const bool bTrue = IsValid(Controller);
-	if(!bTrue) return false;
+	if(!IsValid(Controller)) return false;
 
 	FHitResult HitResult;
-	FVector2D MouseLocation;
-	
-	int32 ViewportSizeX, ViewportSizeY;
-	Controller->GetViewportSize(ViewportSizeX, ViewportSizeY);
-	Controller->GetMousePosition(MouseLocation.X, MouseLocation.Y);
 
-	constexpr  float Top = VIEWPORT_CURSOR_PADDING;
+	int32 ViewportSizeX, ViewportSizeY;
+	float MouseLocationX, MouseLocationY;
+	
+	Controller->GetViewportSize(ViewportSizeX, ViewportSizeY);
+	Controller->GetMousePosition(MouseLocationX, MouseLocationY);
+
+	constexpr float Top = VIEWPORT_CURSOR_PADDING;
 	constexpr float Left = VIEWPORT_CURSOR_PADDING;
 	const float Bottom = ViewportSizeY - VIEWPORT_CURSOR_PADDING;
 	const float Right = ViewportSizeX - VIEWPORT_CURSOR_PADDING;
-	
-	bool bIsWithinViewport = true;
 
-	if(MouseLocation.X < Left || MouseLocation.X > Right)
-	{
-		bIsWithinViewport = false;
-	}
-	
-	if(MouseLocation.Y < Top || MouseLocation.Y > Bottom)
-	{
-		bIsWithinViewport = false;
-	}
+	const bool bIsWithinViewport =
+		(
+			(MouseLocationX < Left || MouseLocationX > Right) && 
+			(MouseLocationY < Top || MouseLocationY > Bottom)
+		) ? false : true;
 
+	
 	if(!bIsWithinViewport)
 	{
-		MouseLocation.X = FMath::Clamp(MouseLocation.X, Left, Right);
-		MouseLocation.Y = FMath::Clamp(MouseLocation.Y, Top, Bottom);
+		MouseLocationX = FMath::Clamp(MouseLocationX, Left, Right);
+		MouseLocationY = FMath::Clamp(MouseLocationY, Top, Bottom);
 	}
 
 	Controller->GetHitResultUnderCursorByChannel(Query, false, HitResult);
-	
-	FVector WorldDirection, WorldLocation;
-	
-	UGameplayStatics::DeprojectScreenToWorld(Controller, MouseLocation, WorldLocation, WorldDirection);
-	WorldDirection = WorldDirection * HitResult.Distance;
-	Location = WorldLocation + WorldDirection;
 
-	
+	Location = HitResult.Location;
 	return bIsWithinViewport;
 }
 
@@ -145,11 +121,11 @@ bool UPlayerFunctionLibrary::TraceFloorViaCursor(APlayerController* Controller, 
 
 void UPlayerFunctionLibrary::SnapCursorToActor(APlayerController* Controller, AActor* Actor)
 {
-	if(Controller  == nullptr || Actor == nullptr) return;
-	
+	if(Controller == nullptr || Actor == nullptr) return;
+
 	const FVector ActorLocation = Actor->GetActorLocation();
 	FVector2D ScreenPosition;
-	
+
 	Controller->ProjectWorldLocationToScreen(ActorLocation, ScreenPosition);
 	Controller->SetMouseLocation(ScreenPosition.X, ScreenPosition.Y);
 }
@@ -157,7 +133,7 @@ void UPlayerFunctionLibrary::SnapCursorToActor(APlayerController* Controller, AA
 APawn* UPlayerFunctionLibrary::GetActivePawn(UObject* Context)
 {
 	const APlayerController* Controller = UGameplayStatics::GetPlayerController(Context, 0);
-	if(Controller != nullptr)
+	if(IsValid(Controller))
 	{
 		return Controller->GetPawn();
 	}
@@ -167,17 +143,29 @@ APawn* UPlayerFunctionLibrary::GetActivePawn(UObject* Context)
 
 EGameMode UPlayerFunctionLibrary::GetGameMode(UObject* Context)
 {
-	const APlayerController* Controller = UGameplayStatics::GetPlayerController(Context, 0);
-	EGameMode Mode = EGameMode::None;
-	if(Controller != nullptr)
-	{
-		const APlayerControllerBase* NHController = Cast<APlayerControllerBase>(Controller);
+	const APlayerControllerBase* NHController = Cast<APlayerControllerBase>(UGameplayStatics::GetPlayerController(Context, 0));
 
-		if(IsValid(NHController))
-		{
-			Mode = NHController->GetGameMode();
-		}
+	if(IsValid(NHController))
+	{
+		return NHController->GetGameMode();
+	}
+	
+	return EGameMode::None;
+}
+
+/*
+ 	// Early out if we clicked on a HUD hitbox
+	if (GetHUD() != NULL && GetHUD()->GetHitBoxAtCoordinates(ScreenPosition, true))
+	{
+		return false;
 	}
 
-	return Mode;
-}
+	FVector WorldOrigin;
+	FVector WorldDirection;
+	if (UGameplayStatics::DeprojectScreenToWorld(this, ScreenPosition, WorldOrigin, WorldDirection) == true)
+	{
+		return GetWorld()->LineTraceSingleByChannel(HitResult, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, TraceChannel, CollisionQueryParams);
+	}
+
+	return false;
+ */

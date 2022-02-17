@@ -13,6 +13,11 @@
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
 
 
+bool APlayerControllerBase::HasValidPawn()
+{
+	return IsValid(ControlledPawn);
+}
+
 APlayerControllerBase::APlayerControllerBase()
 {
 	bShowMouseCursor = true;
@@ -81,7 +86,7 @@ void APlayerControllerBase::SetupInputComponent()
 
 void APlayerControllerBase::Internal_Button_1_Pressed()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_1_Pressed(ControlledPawn);	
 	}
@@ -89,7 +94,7 @@ void APlayerControllerBase::Internal_Button_1_Pressed()
 
 void APlayerControllerBase::Internal_Button_1_Released()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_1_Released(ControlledPawn);
 	}
@@ -97,7 +102,7 @@ void APlayerControllerBase::Internal_Button_1_Released()
 
 void APlayerControllerBase::Internal_Button_2_Pressed()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_2_Pressed(ControlledPawn);
 	}
@@ -105,7 +110,7 @@ void APlayerControllerBase::Internal_Button_2_Pressed()
 
 void APlayerControllerBase::Internal_Button_2_Released()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_2_Released(ControlledPawn);
 	}
@@ -113,7 +118,7 @@ void APlayerControllerBase::Internal_Button_2_Released()
 
 void APlayerControllerBase::Internal_Button_3_Pressed()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_3_Pressed(ControlledPawn);
 	}
@@ -121,7 +126,7 @@ void APlayerControllerBase::Internal_Button_3_Pressed()
 
 void APlayerControllerBase::Internal_Button_3_Released()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_3_Released(ControlledPawn);
 	}
@@ -129,7 +134,7 @@ void APlayerControllerBase::Internal_Button_3_Released()
 
 void APlayerControllerBase::Internal_Button_4_Pressed()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_4_Pressed(ControlledPawn);
 	}
@@ -137,7 +142,7 @@ void APlayerControllerBase::Internal_Button_4_Pressed()
 
 void APlayerControllerBase::Internal_Button_4_Released()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_4_Released(ControlledPawn);
 	}
@@ -145,7 +150,7 @@ void APlayerControllerBase::Internal_Button_4_Released()
 
 void APlayerControllerBase::Internal_Button_5_Pressed()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_5_Pressed(ControlledPawn);
 	}
@@ -153,7 +158,7 @@ void APlayerControllerBase::Internal_Button_5_Pressed()
 
 void APlayerControllerBase::Internal_Button_5_Released()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_5_Released(ControlledPawn);
 	}
@@ -161,7 +166,7 @@ void APlayerControllerBase::Internal_Button_5_Released()
 
 void APlayerControllerBase::Internal_Button_6_Pressed()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_6_Pressed(ControlledPawn);
 	}
@@ -169,7 +174,7 @@ void APlayerControllerBase::Internal_Button_6_Pressed()
 
 void APlayerControllerBase::Internal_Button_6_Released()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_6_Released(ControlledPawn);
 	}
@@ -177,7 +182,7 @@ void APlayerControllerBase::Internal_Button_6_Released()
 
 void APlayerControllerBase::Internal_Button_7_Pressed()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_7_Pressed(ControlledPawn);
 	}
@@ -185,7 +190,7 @@ void APlayerControllerBase::Internal_Button_7_Pressed()
 
 void APlayerControllerBase::Internal_Button_7_Released()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_7_Released(ControlledPawn);
 	}
@@ -193,7 +198,7 @@ void APlayerControllerBase::Internal_Button_7_Released()
 
 void APlayerControllerBase::Internal_Button_8_Pressed()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_8_Pressed(ControlledPawn);
 	}
@@ -202,7 +207,7 @@ void APlayerControllerBase::Internal_Button_8_Pressed()
 
 void APlayerControllerBase::Internal_Button_8_Released()
 {
-	if(ControlledPawn != nullptr)
+	if(HasValidPawn())
 	{
 		IIPlayerPawn::Execute_Input_Button_8_Released(ControlledPawn);
 	}
@@ -221,7 +226,7 @@ void APlayerControllerBase::Internal_Axis_RightStickY(const float Rate)
 void APlayerControllerBase::Internal_Axis_LeftStickX(const float Rate)
 {
 	
-	if(ControlledPawn != nullptr && Rate != 0.0f)
+	if(HasValidPawn() && Rate != 0.0f)
 	{
 		IIPlayerPawn::Execute_Input_Axis_LeftStickX(ControlledPawn, Rate);
 		
@@ -230,7 +235,7 @@ void APlayerControllerBase::Internal_Axis_LeftStickX(const float Rate)
 
 void APlayerControllerBase::Internal_Axis_LeftStickY(const float Rate)
 {
-	if(ControlledPawn != nullptr && Rate != 0.0f)
+	if(HasValidPawn()  && Rate != 0.0f)
 	{
 		IIPlayerPawn::Execute_Input_Axis_LeftStickY(ControlledPawn, Rate);
 		
@@ -239,8 +244,7 @@ void APlayerControllerBase::Internal_Axis_LeftStickY(const float Rate)
 
 void APlayerControllerBase::Internal_Axis_MouseX(const float Rate)
 {
-
-	UDebugHelper::LOG(FString::Printf(TEXT("%f"), Rate));
+	
 }
 
 void APlayerControllerBase::Internal_Axis_MouseY(const float Rate)
@@ -256,86 +260,35 @@ void APlayerControllerBase::MoveCursor_Gamepad(const float Rate, const EAxis::Ty
 	int32 ViewportSizeX, ViewportSizeY;
 	
 	GetMousePosition(MousePositionX, MousePositionY);
-
-	float X = MousePositionX;
-	float Y = MousePositionY;
-	const float Delta = GetWorld()->GetDeltaSeconds();
-	
-	const float Speed =  Rate *  (BaseCursorSpeed/ Delta);
-
-	if(Axis == EAxis::X)
-	{
-		Y = MousePositionY + Speed;
-	}
-
-	if(Axis == EAxis::Y)
-	{
-		X = MousePositionX + Speed;
-	}
-
-	
 	GetViewportSize(ViewportSizeX, ViewportSizeY);
-
-	const float InterpX = FMath::FInterpTo(MousePositionX, X, Delta, 30.f);
-	const float InterpY = FMath::FInterpTo(MousePositionY, Y, Delta, 30.f);
 	
-	const int32 NewPositionX = UKismetMathLibrary::Clamp(InterpX, VIEWPORT_CURSOR_PADDING, ViewportSizeX - VIEWPORT_CURSOR_PADDING);
-	const int32 NewPositionY = UKismetMathLibrary::Clamp(InterpY, VIEWPORT_CURSOR_PADDING, ViewportSizeY - VIEWPORT_CURSOR_PADDING);
-
-	SetMouseLocation(NewPositionX, NewPositionY);
-}
-
-void APlayerControllerBase::MoveCursor(const float Rate, const EAxis::Type Axis)
-{
-	if(Rate == 0.0f) return;
-
-	const float Clamped_Rate = FMath::Clamp(Rate, -1.0f, 1.0f);
-	
-	float MousePositionX, MousePositionY;
-	int32 ViewportSizeX, ViewportSizeY;
-	
-	GetMousePosition(MousePositionX, MousePositionY);
-
-	float X = MousePositionX;
-	float Y = MousePositionY;
 	const float Delta = GetWorld()->GetDeltaSeconds();
+	const float Speed =  Rate *  (BaseCursorSpeed / Delta);
 	
-	const float Speed =  Clamped_Rate *  (BaseCursorSpeed/ Delta);
+	const float X = (Axis == EAxis::Y) ? (MousePositionX + Speed) : MousePositionX;
+	const float Y = (Axis == EAxis::X) ? (MousePositionY + Speed) : MousePositionY;
 
-	if(Axis == EAxis::X)
-	{
-		Y = MousePositionY - Speed;
-	}
+	const FVector2D Interpolation (
+		FMath::FInterpTo(MousePositionX, X, Delta, 30.f),
+		FMath::FInterpTo(MousePositionY, Y, Delta, 30.f)
+	);
 
-	if(Axis == EAxis::Y)
-	{
-		X = MousePositionX + Speed;
-	}
+	const FVector2D ClampedPosition(
+		FMath::Clamp(Interpolation.X, VIEWPORT_CURSOR_PADDING, ViewportSizeX - VIEWPORT_CURSOR_PADDING),
+		FMath::Clamp(Interpolation.Y, VIEWPORT_CURSOR_PADDING, ViewportSizeY - VIEWPORT_CURSOR_PADDING)
+	);
 
-	
-	GetViewportSize(ViewportSizeX, ViewportSizeY);
-
-	const float InterpX = FMath::FInterpTo(MousePositionX, X, Delta, 30.f);
-	const float InterpY = FMath::FInterpTo(MousePositionY, Y, Delta, 30.f);
-
-	
-	
-	const int32 NewPositionX = UKismetMathLibrary::Clamp(InterpX, VIEWPORT_CURSOR_PADDING, ViewportSizeX - VIEWPORT_CURSOR_PADDING);
-	const int32 NewPositionY = UKismetMathLibrary::Clamp(InterpY, VIEWPORT_CURSOR_PADDING, ViewportSizeY - VIEWPORT_CURSOR_PADDING);
-
-	SetMouseLocation(NewPositionX, NewPositionY);
+	SetMouseLocation(ClampedPosition.X, ClampedPosition.Y);
 }
 
 void APlayerControllerBase::SetPawn(APawn* InPawn)
 {
-	//const bool bIsPlayerPawn =  UPlayerFunctionLibrary::IsPlayerPawn(InPawn);
-	APawn* SubjectPawn = UPlayerFunctionLibrary::ValidatePlayerPawn(InPawn);
-	if(IsValid(SubjectPawn))
+	Super::SetPawn(InPawn);
+	
+	if(IsValid(InPawn) && InPawn->GetClass()->ImplementsInterface(UIPlayerPawn::StaticClass()))
 	{
 		ControlledPawn = InPawn;
 	}
-	
-	Super::SetPawn(InPawn);
 }
 
 void APlayerControllerBase::StopCursor()

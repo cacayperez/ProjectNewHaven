@@ -20,7 +20,6 @@ ABuilderCharacterBase::ABuilderCharacterBase()
 	//GetCapsuleComponent()->SetCollisionProfileName("Spectator");
 	GetMesh()->SetCollisionProfileName("Spectator");
 	
-	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
@@ -32,13 +31,11 @@ ABuilderCharacterBase::ABuilderCharacterBase()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 
-
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 	GetCapsuleComponent()->SetSimulatePhysics( false );
 	GetMesh()->SetSimulatePhysics(false);
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
-	
 }
 
 // Called every frame
@@ -46,17 +43,16 @@ void ABuilderCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(IsValid(GetPlayerControllerBase()) && IsValid(ActiveSceneObject))
+	if(GetPlayerControllerBase() && IsValid(ActiveSceneObject))
 	{
 		SmoothSnapToCursor(ActiveSceneObject, DeltaTime);
-		
 	}
 }
 
 APlayerControllerBase* ABuilderCharacterBase::GetPlayerControllerBase()
 {
 	{
-		if(PlayerControllerBase == nullptr && Controller != nullptr)
+		if(PlayerControllerBase == nullptr &&  IsValid(Controller))
 		{
 			PlayerControllerBase = Cast<APlayerControllerBase>(Controller);
 		}
@@ -72,8 +68,6 @@ void ABuilderCharacterBase::PlayerAction_Move_Implementation(const float Value, 
 	{
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(Axis);
-
-		CameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
 		
 		AddMovementInput( Direction, Value );
 	}
@@ -81,16 +75,12 @@ void ABuilderCharacterBase::PlayerAction_Move_Implementation(const float Value, 
 
 void ABuilderCharacterBase::PlayerAction_Interact_Implementation(AActor* Actor)
 {
-
 	if(ActiveSceneObject == nullptr)
 	{
 		const bool bIsValidSceneObject = UPlayerFunctionLibrary::Actor_IsSceneObject(Actor);
 		if(bIsValidSceneObject)
 		{
-			IISceneObject::Execute_OnBuilderCharacter_Interact(Actor);
-			UPlayerFunctionLibrary::SnapCursorToActor(Cast<APlayerController>(Controller), Actor);
 			GrabSceneObject(Actor);
-		
 		}
 	}
 	else
@@ -142,13 +132,12 @@ void ABuilderCharacterBase::Input_Button_3_Pressed_Implementation()
 			AActor* Actor = UPlayerFunctionLibrary::GetObjectOnCursor(PlayerController);
 			Execute_PlayerAction_Interact(this, Actor);
 		}
-		
 	}
 }
 
 void ABuilderCharacterBase::Input_Button_8_Pressed_Implementation()
 {
-		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 
 }
 
@@ -159,6 +148,7 @@ void ABuilderCharacterBase::Input_Button_8_Released_Implementation()
 
 void ABuilderCharacterBase::GrabSceneObject(AActor* Actor)
 {
+	IISceneObject::Execute_OnBuilderCharacter_Interact(Actor);
 	IISceneObject::Execute_SetGrab(Actor, true);
 
 	ActiveSceneObject = Actor;
@@ -167,26 +157,21 @@ void ABuilderCharacterBase::GrabSceneObject(AActor* Actor)
 
 void ABuilderCharacterBase::PlaceActiveSceneObject()
 {
-	if(ActiveSceneObject == nullptr) return;
-	
+	if(!IsValid(ActiveSceneObject)) return;
 	
 	SetActorTickEnabled(false);
 	SmoothSnapToCursor(ActiveSceneObject);
 	PreviousSceneObject = ActiveSceneObject;
 	ActiveSceneObject = nullptr;
-
-	
 }
 
 void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaTime)
 {
-	const bool bTrue = IsValid(Actor);
-	if(!bTrue) return;
+	if(!IsValid(Actor)) return;
 	
 	const FVector ActorLocation = Actor->GetActorLocation();
 	FVector NewLocation;
 	const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
-
 	
 	if(bIsInViewportBounds)
 	{
@@ -194,16 +179,10 @@ void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaT
 		NewLocation.Z = ActorLocation.Z;
 		UPlayerFunctionLibrary::GetGridLocation(NewLocation, SnapLocation);
 
-		if(DeltaTime != 0.0f)
-		{
-			const FVector SmoothedLocation = UKismetMathLibrary::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f);
-			Actor->SetActorLocation(SmoothedLocation);
-		}
-		else
-		{
-			Actor->SetActorLocation(SnapLocation);
-		}
+		SnapLocation = (DeltaTime != 0.0f) ?
+			FMath::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f) :
+			SnapLocation;
 		
+		Actor->SetActorLocation(SnapLocation);
 	}
-		
 }
