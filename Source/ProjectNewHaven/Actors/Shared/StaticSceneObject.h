@@ -3,21 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SceneObject.h"
 #include "GameFramework/Actor.h"
 #include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
 #include "StaticSceneObject.generated.h"
 
 UCLASS()
-class PROJECTNEWHAVEN_API AStaticSceneObject : public AActor, public IISceneObject
+class PROJECTNEWHAVEN_API AStaticSceneObject : public ASceneObject
 {
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Mesh", meta = (AllowPrivateAccess = "true"))
 	class UMeshComponent* MeshComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Mesh", meta = (AllowPrivateAccess = "true"))
-	class USceneComponent* _RootComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool bIsGrabbed = false;

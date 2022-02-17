@@ -4,6 +4,7 @@
 #include "BuilderCharacterBase.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/BuilderInventory.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -17,7 +18,7 @@
 // Sets default values
 ABuilderCharacterBase::ABuilderCharacterBase()
 {
-	//GetCapsuleComponent()->SetCollisionProfileName("Spectator");
+	Inventory = CreateDefaultSubobject<UBuilderInventory>(TEXT("Inventory"));
 	GetMesh()->SetCollisionProfileName("Spectator");
 	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));

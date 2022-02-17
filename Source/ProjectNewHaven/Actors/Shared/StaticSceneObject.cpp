@@ -11,10 +11,8 @@
 // Sets default values
 AStaticSceneObject::AStaticSceneObject()
 {
-	_RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	RootComponent = _RootComponent;
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetCollisionProfileName(FName("SceneObject"));
 }
@@ -24,7 +22,6 @@ void AStaticSceneObject::BeginPlay()
 {
 	Super::BeginPlay();
 	MeshComponent->OnBeginCursorOver.AddDynamic(this, &AStaticSceneObject::OnCursor_HoverIn);
-	
 	MeshComponent->OnEndCursorOver.AddDynamic(this, &AStaticSceneObject::OnCursor_HoverOut);
 
 }
