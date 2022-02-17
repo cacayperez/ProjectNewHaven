@@ -13,6 +13,9 @@
 // Sets default values
 APlayerCharacterBase::APlayerCharacterBase()
 {
+	// _RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	// RootComponent = _RootComponent;
+	
 	CurrentMoveState = ECharacterMoveState::None;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -43,11 +46,11 @@ APlayerCharacterBase::APlayerCharacterBase()
 	//GetCharacterMovement()->bSnapToPlaneAtStart = true;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
-	
-	InteractionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent_Interaction"));
-	InteractionBox->SetupAttachment(RootComponent);
-	InteractionBox->SetRelativeLocation(FVector(30.0f, 0.0f , 0.0f));
-	InteractionBox->SetBoxExtent(FVector(64.0f, 40.0f, 90.0f));
+	//
+	// InteractionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent_Interaction"));
+	// InteractionBox->SetupAttachment(RootComponent);
+	// InteractionBox->SetRelativeLocation(FVector(30.0f, 0.0f , 0.0f));
+	// InteractionBox->SetBoxExtent(FVector(64.0f, 40.0f, 90.0f));
 
 	Execute_Action_Walk(this);
 }

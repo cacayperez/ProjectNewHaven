@@ -104,10 +104,11 @@ bool UPlayerFunctionLibrary::TraceCursorProjection(APlayerController* Controller
 		MouseLocationY = FMath::Clamp(MouseLocationY, Top, Bottom);
 	}
 
-	Controller->GetHitResultUnderCursorByChannel(Query, false, HitResult);
+	const bool bHit = Controller->GetHitResultUnderCursorByChannel(Query, false, HitResult);
 
 	Location = HitResult.Location;
-	return bIsWithinViewport;
+	
+	return (bIsWithinViewport && bHit);
 }
 
 bool UPlayerFunctionLibrary::TraceFloorViaCursor(APlayerController* Controller, FVector& FloorLocation)

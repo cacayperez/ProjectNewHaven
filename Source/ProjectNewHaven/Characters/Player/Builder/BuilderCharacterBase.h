@@ -75,4 +75,7 @@ public:
 	UFUNCTION()
 	void SmoothSnapToCursor(AActor* Actor, const float DeltaTime = 0.0f);
 
+	UFUNCTION()
+	void TracePlacementLocation(AActor* Actor, FVector& Location);
+
 };

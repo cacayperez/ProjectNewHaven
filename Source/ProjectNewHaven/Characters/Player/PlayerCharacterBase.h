@@ -4,19 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
 #include "ProjectNewHaven/Interfaces/Characters/Shared/ICharacter.h"
 #include "ProjectNewHaven/Interfaces/Characters/Shared/IInteractivity.h"
 #include "ProjectNewHaven/Interfaces/Player/IPlayerPawn.h"
 #include "PlayerCharacterBase.generated.h"
 
 UCLASS()
-class PROJECTNEWHAVEN_API APlayerCharacterBase : public ACharacter, public IIPlayerPawn, public IICharacter, public IIInteractivity
+class PROJECTNEWHAVEN_API APlayerCharacterBase : public ACharacter, public IIPlayerPawn, public IICharacter, public IIInteractivity, public IISceneObject
 {
 	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Mesh", meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* _RootComponent;
 	
-	/** Loot Box Collision */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UBoxComponent* InteractionBox;
+	// /** Loot Box Collision */
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	// class UBoxComponent* InteractionBox;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	float CrouchSpeed = 125.0f;

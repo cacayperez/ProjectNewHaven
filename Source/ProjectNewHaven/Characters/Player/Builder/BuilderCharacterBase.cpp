@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectNewHaven/Config/GameplaySettings.h"
 #include "ProjectNewHaven/Interfaces/Actors/Shared/ISceneObject.h"
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
 #include "ProjectNewHaven/Player/PlayerControllerBase.h"
@@ -169,20 +170,55 @@ void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaT
 {
 	if(!IsValid(Actor)) return;
 	
-	FVector ActorLocation = Actor->GetActorLocation();
-	FVector NewLocation;
-	const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
+	const FVector ActorLocation = Actor->GetActorLocation();
+	FVector MouseLocation;
+	
+	const bool bHit = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), MouseLocation);
+	if(bHit)
+	{
+		FVector TraceLocation, SnapLocation;
+		
+		TracePlacementLocation(Actor, TraceLocation);
+		// const FVector NewLocation(MouseLocation.X, MouseLocation.Y, TraceLocation.Z);
+	
+		UPlayerFunctionLibrary::GetGridLocation(MouseLocation, SnapLocation);
+		SnapLocation = (DeltaTime != 0.0f) ?
+			FMath::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f) :
+			SnapLocation;
+		SnapLocation.Z = TraceLocation.Z;
+		Actor->SetActorLocation(SnapLocation);
+	}
+
+	/*const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
 	NewLocation.Z = NewLocation.Z - 2.f;
 	if(bIsInViewportBounds)
 	{
 		FVector SnapLocation;
 		UPlayerFunctionLibrary::GetGridLocation(NewLocation, SnapLocation);
-		//ActorLocation.Z = SnapLocation.Z;
 		SnapLocation = (DeltaTime != 0.0f) ?
 			FMath::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f) :
 			SnapLocation;
-
 		
 		Actor->SetActorLocation(SnapLocation);
+	}*/
+
+
+	
+}
+
+void ABuilderCharacterBase::TracePlacementLocation(AActor* Actor, FVector& Location)
+{
+	constexpr float TraceOffset = 500.f;
+	const TArray<AActor*> ActorsToIgnore({Actor});
+	const FVector BaseLocation = Actor->GetActorLocation();
+	const FVector TraceStart = BaseLocation +  (FVector::UpVector * TraceOffset);
+	const FVector TraceEnd = BaseLocation +  (FVector::DownVector * TraceOffset);
+	FHitResult Result;
+	const bool bHit = UKismetSystemLibrary::LineTraceSingle(this, TraceStart, TraceEnd,  UEngineTypes::ConvertToTraceType(ECC_FLoor), false, ActorsToIgnore, EDrawDebugTrace::ForOneFrame, Result, true, FColor::Green);
+
+	if(bHit)
+	{
+		Location = Result.Location;
 	}
+
 }
