@@ -28,7 +28,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	static void GetGridLocation(const FVector BaseLocation, FVector& GridLocation);
+	static void GetGridLocation(const FVector BaseLocation, FVector& GridLocation, const float ZOffset = 0.0f);
 	
 	UFUNCTION(BlueprintCallable)
 	static bool TraceCursorProjection(APlayerController* Controller, const ETraceTypeQuery Query, FVector& Location);

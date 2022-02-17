@@ -11,10 +11,8 @@
 // Sets default values
 AStaticSceneObject::AStaticSceneObject()
 {
-	_RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	RootComponent = _RootComponent;
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetCollisionProfileName(FName("SceneObject"));
 }
@@ -24,7 +22,6 @@ void AStaticSceneObject::BeginPlay()
 {
 	Super::BeginPlay();
 	MeshComponent->OnBeginCursorOver.AddDynamic(this, &AStaticSceneObject::OnCursor_HoverIn);
-	
 	MeshComponent->OnEndCursorOver.AddDynamic(this, &AStaticSceneObject::OnCursor_HoverOut);
 
 }
@@ -47,7 +44,16 @@ void AStaticSceneObject::OnBuilderCharacter_Inspect_Implementation()
 
 void AStaticSceneObject::OnBuilderCharacter_Interact_Implementation()
 {
-
+	if(!bIsGrabbed)
+	{
+		Execute_OnBuilderCharacter_Select(this);
+		bIsGrabbed = true;
+	}
+	else
+	{
+		Execute_OnBuilderCharacter_Deselect(this);
+		bIsGrabbed = false;
+	}
 }
 
 bool AStaticSceneObject::HasCollided_Implementation()
@@ -68,7 +74,7 @@ void AStaticSceneObject::SetGrab_Implementation(bool bVal)
 
 void AStaticSceneObject::OnCursor_HoverIn(UPrimitiveComponent * Component)
 {
-	Execute_OnBuilderCharacter_Select(this);
+	//Execute_OnBuilderCharacter_Select(this);
 }
 
 void AStaticSceneObject::OnCursor_HoverOut(UPrimitiveComponent* Component)

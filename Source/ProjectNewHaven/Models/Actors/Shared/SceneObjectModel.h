@@ -16,6 +16,20 @@ enum class ESceneObjectType : uint8
 	Character
 };
 
+USTRUCT()
+struct FSceneObjectData : public FTableRowBase
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Description;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class ASceneObject* Actor;
+};
 /**
  * 
  */

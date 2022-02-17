@@ -26,6 +26,9 @@ class PROJECTNEWHAVEN_API ABuilderCharacterBase : public ACharacter, public IIPl
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	class UBuilderInventory* Inventory;
+	
 	UPROPERTY()
 	class AActor* ActiveSceneObject;
 	UPROPERTY()
