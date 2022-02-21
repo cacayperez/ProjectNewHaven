@@ -4,6 +4,7 @@
 #include "StaticSceneObject.h"
 
 #include "Components/BoxComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectNewHaven/Debug/DebugHelper.h"
 #include "ProjectNewHaven/Library/PlayerFunctionLibrary.h"
 
@@ -59,6 +60,12 @@ void AStaticSceneObject::OnBuilderCharacter_Interact_Implementation()
 bool AStaticSceneObject::HasCollided_Implementation()
 {
 	return bHasCollided;
+}
+
+bool AStaticSceneObject::IsMountable_Implementation()
+{
+	return true;
+	//UKismetSystemLibrary::BoxTraceSingle(this, )
 }
 
 bool AStaticSceneObject::IsGrabbed_Implementation()

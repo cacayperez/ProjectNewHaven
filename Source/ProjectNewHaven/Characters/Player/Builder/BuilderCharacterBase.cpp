@@ -159,11 +159,16 @@ void ABuilderCharacterBase::GrabSceneObject(AActor* Actor)
 void ABuilderCharacterBase::PlaceActiveSceneObject()
 {
 	if(!IsValid(ActiveSceneObject)) return;
-	
-	SetActorTickEnabled(false);
-	SmoothSnapToCursor(ActiveSceneObject);
-	PreviousSceneObject = ActiveSceneObject;
-	ActiveSceneObject = nullptr;
+
+	const bool bIsMountable = IISceneObject::Execute_IsMountable(ActiveSceneObject);
+
+	if(bIsMountable)
+	{
+		SetActorTickEnabled(false);
+		SmoothSnapToCursor(ActiveSceneObject);
+		PreviousSceneObject = ActiveSceneObject;
+		ActiveSceneObject = nullptr;
+	}
 }
 
 void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaTime)
@@ -179,7 +184,6 @@ void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaT
 		FVector TraceLocation, SnapLocation;
 		
 		TracePlacementLocation(Actor, TraceLocation);
-		// const FVector NewLocation(MouseLocation.X, MouseLocation.Y, TraceLocation.Z);
 	
 		UPlayerFunctionLibrary::GetGridLocation(MouseLocation, SnapLocation);
 		SnapLocation = (DeltaTime != 0.0f) ?
@@ -187,23 +191,7 @@ void ABuilderCharacterBase::SmoothSnapToCursor(AActor* Actor, const float DeltaT
 			SnapLocation;
 		SnapLocation.Z = TraceLocation.Z;
 		Actor->SetActorLocation(SnapLocation);
-	}
-
-	/*const bool bIsInViewportBounds = UPlayerFunctionLibrary::TraceFloorViaCursor(GetPlayerControllerBase(), NewLocation);
-	NewLocation.Z = NewLocation.Z - 2.f;
-	if(bIsInViewportBounds)
-	{
-		FVector SnapLocation;
-		UPlayerFunctionLibrary::GetGridLocation(NewLocation, SnapLocation);
-		SnapLocation = (DeltaTime != 0.0f) ?
-			FMath::VInterpTo(ActorLocation, SnapLocation, DeltaTime, 20.0f) :
-			SnapLocation;
-		
-		Actor->SetActorLocation(SnapLocation);
-	}*/
-
-
-	
+	}	
 }
 
 void ABuilderCharacterBase::TracePlacementLocation(AActor* Actor, FVector& Location)

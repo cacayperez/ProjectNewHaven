@@ -39,6 +39,7 @@ public:
 	virtual void OnBuilderCharacter_Inspect_Implementation() override;
 	virtual void OnBuilderCharacter_Interact_Implementation() override;
 	virtual bool HasCollided_Implementation() override;
+	virtual bool IsMountable_Implementation() override;
 
 	virtual bool IsGrabbed_Implementation() override;
 	virtual void SetGrab_Implementation(bool bVal) override;

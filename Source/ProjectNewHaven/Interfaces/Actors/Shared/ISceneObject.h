@@ -34,6 +34,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool HasCollided();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsMountable();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void OnPlayerCharacter_Select();
