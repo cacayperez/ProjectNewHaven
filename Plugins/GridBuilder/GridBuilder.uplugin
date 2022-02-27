@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "GridBuilder",
+	"Description": "",
+	"Category": "Other",
+	"CreatedBy": "Cacay Perez",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "GridBuilder",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}
